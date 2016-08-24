@@ -44,9 +44,9 @@ module.exports.generateIV = function(bytes) {
   return forge.random.getBytesSync(bytes);
 }
 
-module.exports.generateKey = function(bytes) [
+module.exports.generateKey = function(bytes) {
   //Default to 32 bytes for 256 bit AES
   bytes = bytes || 32;
   //Generate and return random bytes
   return forge.random.getBytesSync(bytes);
-]
+}
