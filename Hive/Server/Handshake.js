@@ -1,10 +1,10 @@
 //Import forge for encryption
-var forge = import('node-forge');
+var forge = require('node-forge');
 //Import our error handling module
-var Error = import('../../Utils/Error.js');
+var Error = require('../../Utils/Error.js');
 //Import our encryption modules
-var RSA = import('../../Utils/RSA.js');
-var AES = import('../../Utils/AES.js');
+var RSA = require('../../Utils/RSA.js');
+var AES = require('../../Utils/AES.js');
 //Should return an AES key
 module.exports = function(message, socket, eventEmitter, key) {
   //If the encrypted payload is not present, fail
