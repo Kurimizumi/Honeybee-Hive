@@ -57,3 +57,7 @@ var Honeybee = function(address, port, serverPublicKey) {
   HoneybeeConnectionHandler(this.address, this.port, this.serverPublicKey, this.eventHandler);
   return this.eventEmitter;
 }
+
+//Export functions
+module.exports.Hive = Hive;
+module.exports.Honeybee = Honeybee;
