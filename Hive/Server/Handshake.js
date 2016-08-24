@@ -53,7 +53,7 @@ module.exports = function(message, socket, eventEmitter, key) {
     return;
   }
   //Send message to user
-  socket.sendMessage({"type": "response", "payload": encrypted[0], "tag": encrypted[1], "iv": encrypted[2]});
+  socket.sendMessage({"payload": encrypted[0], "tag": encrypted[1], "iv": encrypted[2]});
   //Return the key to the connection handler
   return decrypted.key;
 }

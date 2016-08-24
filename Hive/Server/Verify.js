@@ -65,7 +65,7 @@ module.exports = function(message, socket, eventEmitter, key, callback) {
     //Verify that the worker is who they say they are. If verification fails
     //pass the error to the user
     try {
-      verified = RSA.verify(forge.pki.publicKeyFromPem(publicKey), verify, md);
+      verified = RSA.verify(publicKey, verify, md);
     } catch {
       Error.sendError(socket, "SECURITY_VERIFICATION_FAILURE", true);
       //Stop execution
