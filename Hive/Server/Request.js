@@ -60,7 +60,6 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
             {['workers.' + groupMax]: {$exists: false}},
             //And not in the workers section of the work group
             {'workers': {$ne: userID}}
-            }
           ]
         },
         function(error, workgroup) {
