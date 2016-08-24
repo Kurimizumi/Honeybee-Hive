@@ -1,5 +1,5 @@
 //Import events
-var events = require('evenets');
+var events = require('events');
 
 //Create EventHandler function
 var EventHandler = function() {
