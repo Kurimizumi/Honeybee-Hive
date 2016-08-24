@@ -90,7 +90,9 @@ module.exports = function(message, socket, eventEmitter, key, userID, groupMax){
           return;
         }
         //Otherwise alert the user about the success
-        var jsonmsg = true;
+        var jsonmsg = {
+          success: true
+        };
         //Generate an IV
         var iv = AES.generateIV();
         //Declare encrypted for try/catch
