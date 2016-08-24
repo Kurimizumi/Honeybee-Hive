@@ -26,10 +26,10 @@ var Hive = function(port, key, workTimeout, connectionTimeout, groupMax) {
   //Create a TCP server
   this.server = net.createServer();
   //Listen on the port defined above
-  server.listen(this.port);
+  this.server.listen(this.port);
   //When we receive a connection, create a socket and pass it to the
   //HiveConnectionHandler
-  server.on('connection', function(socket) {
+  this.server.on('connection', function(socket) {
     //Pass in the socket, the event emitter, and the key
     HiveConnectionHandler(socket, this.eventEmitter, this.key, this.workTimeout,
       this.connectionTimeout, this.groupMax);
