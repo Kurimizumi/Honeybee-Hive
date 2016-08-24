@@ -52,7 +52,7 @@ var Honeybee = function(address, port, serverPublicKey) {
   this.port = port;
   this.serverPublicKey = serverPublicKey;
   //Create an instance of eventEmitter in order to be able to use it later
-  this.eventHandler = new EventHandler();
+  this.eventHandler = new HoneybeeEventHandler();
   //Call the connection handler
   HoneybeeConnectionHandler(this.address, this.port, this.serverPublicKey, this.eventHandler);
   return this.eventEmitter;
