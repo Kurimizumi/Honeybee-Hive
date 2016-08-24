@@ -6,13 +6,10 @@ var Error = require('../../Utils/Error.js');
 //Import forge
 var forge = require('node-forge');
 
-//Setup mongoose
-var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/hive');
 //Mongoose schemas
 var Worker = require('../MognoSchemas/Worker.js');
 
-module.exports = function(message, socket, eventEmitter, key, callback) {
+module.exports = function(message, mongoose, socket, eventEmitter, key, callback) {
   //Supposed user ID
   var id = message.id;
   //Get encryption information

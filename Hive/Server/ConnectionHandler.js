@@ -5,6 +5,10 @@ var register = require('./Register.js');
 var handshake = require('./Handshake.js');
 var verify = require('./Verify.js');
 var request = require('./Request.js');
+
+//Mongoose
+var mongoose = require("mongoose");
+mongoose.connect("mongodb://localhost/hive");
 //Import error handling function
 var Error = require('../../Utils/Error.js');
 //Export the message handling function
@@ -60,7 +64,7 @@ module.exports = function(socket, eventEmitter, key, workTimeout,
     if(message.type.toUpperCase() == 'REGISTER') {
       //Call register function with the message, socket, eventEmitter and the
       //session key
-      register(message, socket, eventEmitter, aesKey);
+      register(message, mongoose, socket, eventEmitter, aesKey);
       //Return to prevent further execution until the next message
       return;
     }
@@ -68,7 +72,7 @@ module.exports = function(socket, eventEmitter, key, workTimeout,
     else if(message.type.toUpperCase() == 'VERIFY') {
       //Call verify function with message, socket, eventEmitter, session key,
       //and a callback due to mongodb being asynchronous
-      verify(message, socket, eventEmitter, aesKey, function(verif) {
+      verify(message, mongoose, socket, eventEmitter, aesKey, function(verif) {
         verified = verif;
         if(verified) {
           id = message.id;
@@ -93,12 +97,12 @@ module.exports = function(socket, eventEmitter, key, workTimeout,
     //      the desired length):
     //      {['Worker Array.' + maxNumber]: {$exists: false}}
     if(message.type.toUpperCase() == 'REQUEST') {
-      request(message, socket, eventEmitter, aesKey, id, groupMax);
+      request(message, mongoose, socket, eventEmitter, aesKey, id, groupMax);
     }
     //TODO: Submit work for verification. Should check if the WorkGroup has
     //      matching results
     else if(message.type.toUpperCase() == 'SUBMIT') {
-      submit(message, socket, eventEmitter, aesKey, id, groupMax);
+      submit(message, mongoose, socket, eventEmitter, aesKey, id, groupMax);
     }
     //TODO: That's it???
   });

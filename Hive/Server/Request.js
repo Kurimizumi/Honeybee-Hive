@@ -19,7 +19,7 @@ var checkForSubmittedData = function(array, userID) {
 }
 
 //Export the request handler
-module.exports = function(message, socket, eventEmitter, key, userID, groupMax){
+module.exports = function(message, mongoose, socket, eventEmitter, key, userID, groupMax){
   //Get encryption information
   var payload = message.payload;
   var tag = message.tag;

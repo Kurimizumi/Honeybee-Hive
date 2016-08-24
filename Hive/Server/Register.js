@@ -11,7 +11,7 @@ mongoose.connect('mongodb://localhost/hive');
 //Import worker schema in order to register the new worker
 var Worker = require('../MongoSchemas/Worker.js');
 //Export single function for registration
-module.exports = function(message, socket, eventEmitter, key) {
+module.exports = function(message, mongoose, socket, eventEmitter, key) {
   //Create new worker
   var newWorker = new Worker();
   //Create a keypair

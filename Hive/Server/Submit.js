@@ -25,7 +25,7 @@ var WorkGroup = require('../MongoSchemas/WorkGroup.js');
 var DataChunk = require('../MongoSchemas/DataChunk.js');
 
 //Export main submit function
-module.exports = function(message, socket, eventEmitter, key, userID, groupMax){
+module.exports = function(message, mongoose, socket, eventEmitter, key, userID, groupMax){
   //Get encryption information
   var payload = message.payload;
   var tag = message.tag;
