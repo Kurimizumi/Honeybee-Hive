@@ -1,7 +1,7 @@
 //Import mongoose, the display manager
 var mongoose = require('mongoose');
 //Create a worker schema for storing clients
-var workGroupSchema = mongoose.schema({
+var workGroupSchema = mongoose.Schema({
   //Array of objects containing data from each client
   data: [{
     worker: String, //Worker ID

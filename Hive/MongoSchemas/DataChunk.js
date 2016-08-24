@@ -2,7 +2,7 @@
 var mongoose = require('mongoose');
 
 //Setup schema
-var dataChunkSchema = mongoose.schema({
+var dataChunkSchema = mongoose.Schema({
   //data of the DataChunk
   data: String
 })

@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 //Import forge library for key generation
 var forge = require('node-forge');
 //Create a worker schema for storing clients
-var workerSchema = mongoose.schema({
+var workerSchema = mongoose.Schema({
   //For verification
   publicKey: String,
   //Get registration date (future functionality)
