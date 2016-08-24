@@ -17,8 +17,8 @@ var EventHandler = function() {
 
   //Submit event
   //callback is the callback once submitted work is confirmed
-  this.submit = function(callback) {
-    this.emit('submit', callback);
+  this.submit = function(data, callback) {
+    this.emit('submit', data, callback);
   }
 }
 
