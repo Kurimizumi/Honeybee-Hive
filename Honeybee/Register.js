@@ -25,7 +25,7 @@ module.exports = function(socket, eventHandler, storage, serverPublicKey,
       var decrypted;
       try {
         decrypted = AES.decrypt(sessionKey, tag, iv, message);
-      } catch {
+      } catch (e) {
         console.log('Error: SECURITY_DECRYPTION_FAILURE');
         return;
       }
@@ -43,7 +43,7 @@ module.exports = function(socket, eventHandler, storage, serverPublicKey,
     //Try to encrypt
     try {
       encrypted = AES.encrypt(sessionKey, iv, JSON.stringify(jsonmsg));
-    } catch {
+    } catch (e) {
       console.log('Error: SECURITY_ENCRYPTION_FAILURE');
       return;
     }

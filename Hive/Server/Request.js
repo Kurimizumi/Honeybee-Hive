@@ -29,7 +29,7 @@ module.exports = function(message, socket, eventEmitter, key, userID, groupMax){
   //Try decrypting, otherwise pass error onto user
   try {
     decrypted = JSON.parse(AES.decrypt(key, iv, tag, payload));
-  } catch {
+  } catch (e) {
     Error.sendError(socket, 'SECURITY_DECRYPTION_FAILURE', true);
     return;
   }
@@ -104,7 +104,7 @@ module.exports = function(message, socket, eventEmitter, key, userID, groupMax){
                 //Try to encrypt, forward errors
                 try {
                   encrypted = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
-                } catch {
+                } catch (e) {
                   Error.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
                   //Stop execution
                   return;
@@ -136,7 +136,7 @@ module.exports = function(message, socket, eventEmitter, key, userID, groupMax){
               //Attempt to encrypt, pass errors to user
               try {
                 encrypted = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
-              } catch {
+              } catch (e) {
                 Error.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
                 //Stop execution
                 return;

@@ -23,7 +23,7 @@ module.exports = function(socket, eventHandler, serverPublicKey,
         var decrypted;
         try {
           decrypted = AES.decrypt(sessionKey, iv, tag, payload);
-        } catch {
+        } catch (e) {
           console.log('Error: SECURITY_DECRYPTION_FAILURE');
           return;
         }
@@ -42,7 +42,7 @@ module.exports = function(socket, eventHandler, serverPublicKey,
         var out = RSA.sign(clientPrivateKey, 'verify');
         signed = out.signed;
         md = out.md;
-      } catch {
+      } catch (e) {
         console.log('Error: SECURITY_SIGNING_FAILURE');
         return;
       }
@@ -57,7 +57,7 @@ module.exports = function(socket, eventHandler, serverPublicKey,
       var encrypted;
       try {
         encrypted = AES.encrypt(sessionKey, iv, JSON.stringify(iv));
-      } catch {
+      } catch (e) {
         console.log('Error: SECURITY_ENCRYPTION_FAILURE');
         return;
       }

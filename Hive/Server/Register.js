@@ -52,7 +52,7 @@ module.exports = function(message, socket, eventEmitter, key) {
       //Encrypt the message, passing errors to user
       try {
         message = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
-      } catch {
+      } catch (e) {
         Error.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
         //Stop execution
         return;

@@ -12,7 +12,7 @@ module.exports = function(socket, serverPublicKey, callback) {
   //Attempt to encrypt, otherwise error to user
   try {
     encrypted = RSA.encrypt(serverPublicKey, JSON.stringify({key: sessionKey}));
-  } catch {
+  } catch (e) {
     console.log('Error: SECURITY_ENCRYPTION_FAILURE');
     return;
   }
@@ -30,7 +30,7 @@ module.exports = function(socket, serverPublicKey, callback) {
     var decrypted;
     try {
       decrypted = JSON.parse(AES.decrypt(sessionKey, iv, tag, payload))
-    } catch {
+    } catch (e) {
       console.log('Error: SECURITY_DECRYPTION_FAILURE');
       return;
     }

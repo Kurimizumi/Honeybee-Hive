@@ -24,7 +24,7 @@ module.exports = function(message, socket, eventEmitter, key, callback) {
   //Catch any errors during decryption
   try {
     decrypted = JSON.parse(AES.decrypt(key, iv, tag, payload));
-  } catch {
+  } catch (e) {
     //Forward error to user and disconnect
     Error.sendError(socket, 'SECURITY_DECRYPTION_FAILURE', true);
     //Prevent further execution
@@ -66,7 +66,7 @@ module.exports = function(message, socket, eventEmitter, key, callback) {
     //pass the error to the user
     try {
       verified = RSA.verify(publicKey, verify, md);
-    } catch {
+    } catch (e) {
       Error.sendError(socket, 'SECURITY_VERIFICATION_FAILURE', true);
       //Stop execution
       return;
@@ -82,7 +82,7 @@ module.exports = function(message, socket, eventEmitter, key, callback) {
     //Encrypt message, passing errors to user
     try {
       var message = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
-    } catch {
+    } catch (e) {
       Error.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
       //Stop execution
       return;
