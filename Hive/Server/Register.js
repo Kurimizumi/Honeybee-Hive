@@ -4,10 +4,6 @@ var forge = require('node-forge');
 var AES = require('../../Utils/AES.js');
 //Error handler
 var Error = require('../../Utils/Error.js');
-//Setup mongoose
-var mongoose = require('mongoose');
-//TODO: Allow the user to specify their own database
-mongoose.connect('mongodb://localhost/hive');
 //Import worker schema in order to register the new worker
 var Worker = require('../MongoSchemas/Worker.js');
 //Export single function for registration
