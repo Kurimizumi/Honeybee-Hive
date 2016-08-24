@@ -1,5 +1,5 @@
 //Import forge
-var forge = require("node-forge");
+var forge = require('node-forge');
 
 //Define encryption function
 module.exports.encrypt = function(publicKey, message) {
@@ -27,11 +27,11 @@ module.exports.sign = function(privateKey, message) {
   //Create hash for signing
   var md = forge.md.sha1.create();
   //Update hash with data
-  md.update(message, "utf8");
+  md.update(message, 'utf8');
   //Sign the message using the private key
   var signed = privateKey.sign(md);
   //Return the signed message and the hash in string form
-  return {"signed": signed, "md": md.digest().bytes()};
+  return {'signed': signed, 'md': md.digest().bytes()};
 }
 
 //Define verification function

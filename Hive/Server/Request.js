@@ -1,11 +1,11 @@
 //Import error handler
-var Error = require("../../Utils/Error.js");
+var Error = require('../../Utils/Error.js');
 //Import AES library
-var AES = require("../../Utils/AES.js");
+var AES = require('../../Utils/AES.js');
 
 //Schema imports
-var Worker = require("../MongoSchemas/Worker.js");
-var WorkGroup = require("../MongoSchemas/WorkGroup.js");
+var Worker = require('../MongoSchemas/Worker.js');
+var WorkGroup = require('../MongoSchemas/WorkGroup.js');
 
 var checkForSubmittedData = function(array, userID) {
   for(var i = 0; i < array.length; i++) {
@@ -30,14 +30,14 @@ module.exports = function(message, socket, eventEmitter, key, userID, groupMax){
   try {
     decrypted = JSON.parse(AES.decrypt(key, iv, tag, payload));
   } catch {
-    Error.sendError(socket, "SECURITY_DECRYPTION_FAILURE", true);
+    Error.sendError(socket, 'SECURITY_DECRYPTION_FAILURE', true);
     return;
   }
   if(!decrypted ||
     !decrypted.request ||
-    decrypted.request.toUpperCase() !== "REQUEST") {
+    decrypted.request.toUpperCase() !== 'REQUEST') {
       //Stop execution, we cannot verify the user...
-      Error.sendError(socket, "STAGE_HANDSHAKE_POST_COMPLETE_FAILURE", true);
+      Error.sendError(socket, 'STAGE_HANDSHAKE_POST_COMPLETE_FAILURE', true);
       return;
   }
   //Make sure that the user does not currently have a work group that they have
@@ -45,7 +45,7 @@ module.exports = function(message, socket, eventEmitter, key, userID, groupMax){
   WorkGroup.find({workers: userID}, function(error, workgroups) {
     //Pass database errors onto client
     if(error) {
-      Error.sendError(socket, "DATABASE_GENERIC", true);
+      Error.sendError(socket, 'DATABASE_GENERIC', true);
       //Stop execution
       return;
     }
@@ -66,7 +66,7 @@ module.exports = function(message, socket, eventEmitter, key, userID, groupMax){
         function(error, workgroup) {
           //Pass database errors onto the client
           if(error) {
-            Error.sendError(socket, "DATABASE_GENERIC", true);
+            Error.sendError(socket, 'DATABASE_GENERIC', true);
             //Stop execution
             return;
           }
@@ -77,7 +77,7 @@ module.exports = function(message, socket, eventEmitter, key, userID, groupMax){
             eventEmitter.emit('create_work', function(work) {
               //If there's no work left
               if(!work) {
-                Error.sendError(socket, "STAGE_REQUEST_NO_WORK", true);
+                Error.sendError(socket, 'STAGE_REQUEST_NO_WORK', true);
                 //Stop execution
                 return;
               }
@@ -89,7 +89,7 @@ module.exports = function(message, socket, eventEmitter, key, userID, groupMax){
               newworkgroup.save(function(error) {
                 //If database error, pass it onto the user
                 if(error) {
-                  Error.sendError(socket, "DATABASE_GENERIC", true);
+                  Error.sendError(socket, 'DATABASE_GENERIC', true);
                   //Stop execution
                   return;
                 }
@@ -105,13 +105,13 @@ module.exports = function(message, socket, eventEmitter, key, userID, groupMax){
                 try {
                   encrypted = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
                 } catch {
-                  Error.sendError(socket, "SECURITY_ENCRYPTION_FAILURE", true);
+                  Error.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
                   //Stop execution
                   return;
                 }
                 //Send work to client
-                socket.sendMessage("payload": encrypted[0], "tag": encrypted[1],
-                  "iv": encrypted[2]);
+                socket.sendMessage('payload': encrypted[0], 'tag': encrypted[1],
+                  'iv': encrypted[2]);
               });
             });
           } else {
@@ -121,7 +121,7 @@ module.exports = function(message, socket, eventEmitter, key, userID, groupMax){
             workgroup.save(function(error) {
               //Pass database errors to user
               if(error) {
-                Error.sendError(socket, "DATABASE_GENERIC", true);
+                Error.sendError(socket, 'DATABASE_GENERIC', true);
                 //stop execution
                 return;
               }
@@ -137,18 +137,18 @@ module.exports = function(message, socket, eventEmitter, key, userID, groupMax){
               try {
                 encrypted = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
               } catch {
-                Error.sendError(socket, "SECURITY_ENCRYPTION_FAILURE", true);
+                Error.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
                 //Stop execution
                 return;
               }
-              socket.sendMessage({"payload": encrypted[0], "tag": encrypted[1], "iv": encrypted[2]});
+              socket.sendMessage({'payload': encrypted[0], 'tag': encrypted[1], 'iv': encrypted[2]});
             });
           }
         }
       );
     } else {
       //Pending work
-      Error.sendError(socket, "STAGE_REQUEST_PENDING_WORK", true);
+      Error.sendError(socket, 'STAGE_REQUEST_PENDING_WORK', true);
       //Stop execution/return for consistency
       return;
     }

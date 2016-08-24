@@ -1,15 +1,15 @@
 //Import forge
-var forge = require("node-forge");
+var forge = require('node-forge');
 //AES helper
-var AES = require("../../Utils/AES.js");
+var AES = require('../../Utils/AES.js');
 //Error handler
-var Error = require("../../Utils/Error.js");
+var Error = require('../../Utils/Error.js');
 //Setup mongoose
-var mongoose = require("mongoose");
+var mongoose = require('mongoose');
 //TODO: Allow the user to specify their own database
-mongoose.connect("mongodb://localhost/hive");
+mongoose.connect('mongodb://localhost/hive');
 //Import worker schema in order to register the new worker
-var Worker = require("../MongoSchemas/Worker.js");
+var Worker = require('../MongoSchemas/Worker.js');
 //Export single function for registration
 module.exports = function(message, socket, eventEmitter, key) {
   //Create new worker
@@ -20,7 +20,7 @@ module.exports = function(message, socket, eventEmitter, key) {
     //occured
     if(!keyPair) {
       //Stop on error
-      Error.sendError(socket, "SECURITY_KEY_GENERATION_FAILURE", true);
+      Error.sendError(socket, 'SECURITY_KEY_GENERATION_FAILURE', true);
       //Return to stop further execution
       return;
     }
@@ -37,7 +37,7 @@ module.exports = function(message, socket, eventEmitter, key) {
       //If saving throws an error, tell the user what the error was
       if(error) {
         //Error and disconnect from user
-        Error.sendError(socket, "DATABASE_GENERIC", true);
+        Error.sendError(socket, 'DATABASE_GENERIC', true);
         //Return to stop further execution
         return;
       }
@@ -53,12 +53,12 @@ module.exports = function(message, socket, eventEmitter, key) {
       try {
         message = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
       } catch {
-        Error.sendError(socket, "SECURITY_ENCRYPTION_FAILURE", true);
+        Error.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
         //Stop execution
         return;
       }
       //Send the message and the user's new ID
-      socket.sendMessage({"id": newWorker._id, "payload": message[0], "tag": message[1], "iv": message[2]}, function(error) {
+      socket.sendMessage({'id': newWorker._id, 'payload': message[0], 'tag': message[1], 'iv': message[2]}, function(error) {
         //Destroy the socket (make the user reconnect and verify etc)
         socket.destroy();
       });

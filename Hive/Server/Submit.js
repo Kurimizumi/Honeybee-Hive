@@ -13,16 +13,16 @@
 */
 
 //Import error handler
-var Error = require("../../Utils/Error.js");
+var Error = require('../../Utils/Error.js');
 //Import AES for encryption
-var AES = require("../../Utils/AES.js");
+var AES = require('../../Utils/AES.js');
 
 //Mongoose setup
-var mongoose = require("mongoose");
-mongoose.connect("mongodb://localhost/hive");
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/hive');
 //Mongo schemas
-var WorkGroup = require("../MongoSchemas/WorkGroup.js");
-var DataChunk = require("../MongoSchemas/DataChunk.js");
+var WorkGroup = require('../MongoSchemas/WorkGroup.js');
+var DataChunk = require('../MongoSchemas/DataChunk.js');
 
 //Export main submit function
 module.exports = function(message, socket, eventEmitter, key, userID, groupMax){
@@ -36,13 +36,13 @@ module.exports = function(message, socket, eventEmitter, key, userID, groupMax){
   try {
     decrypted = JSON.parse(AES.decrypt(key, iv, tag, payload));
   } catch {
-    Error.sendError(socket, "SECURITY_DECRYPTION_FAILURE", true);
+    Error.sendError(socket, 'SECURITY_DECRYPTION_FAILURE', true);
     //Stop execution
     return;
   }
   //Check that the user is verified still, if not disconnect them
   if(!decrypted) {
-    Error.error(socket, "STAGE_HANDSHAKE_POST_COMPLETE_FAILURE", true);
+    Error.error(socket, 'STAGE_HANDSHAKE_POST_COMPLETE_FAILURE', true);
     //Stop execution
     return;
   }
@@ -50,7 +50,7 @@ module.exports = function(message, socket, eventEmitter, key, userID, groupMax){
   var data = decrypted.data;
   //If no data was sent, error
   if(!data) {
-    Error.error(socket, "STAGE_SUBMIT_NO_DATA", true);
+    Error.error(socket, 'STAGE_SUBMIT_NO_DATA', true);
     //Stop execution
     return;
   }
@@ -66,13 +66,13 @@ module.exports = function(message, socket, eventEmitter, key, userID, groupMax){
     }, function(error, workgroup) {
       //If an error occured, pass it to the user and disconnect
       if(error) {
-        Error.sendError(socket, "DATABASE_GENERIC", true);
+        Error.sendError(socket, 'DATABASE_GENERIC', true);
         //Stop execution
         return;
       }
       //If no work group was found, error to the user
       if(!workgroup) {
-        Error.error(socket, "DATABASE_NOT_FOUND", true);
+        Error.error(socket, 'DATABASE_NOT_FOUND', true);
         //Stop execution
         return;
       }
@@ -85,7 +85,7 @@ module.exports = function(message, socket, eventEmitter, key, userID, groupMax){
       workgroup.save(function(error) {
         //If error, pass to user
         if(error) {
-          Error.error(socket, "DATABASE_GENERIC", true);
+          Error.error(socket, 'DATABASE_GENERIC', true);
           //Stop execution
           return;
         }
@@ -100,11 +100,11 @@ module.exports = function(message, socket, eventEmitter, key, userID, groupMax){
           encrypted = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
         } catch {
           //Tell the user about the error and halt
-          Error.sendError(socket, "SECURITY_ENCRYPTION_FAILURE", true);
+          Error.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
           //Stop execution
           return;
         }
-        socket.sendMessage("payload": encrypted[0], "tag": encrypted[1], "iv": encrypted[2]);
+        socket.sendMessage('payload': encrypted[0], 'tag': encrypted[1], 'iv': encrypted[2]);
         //Check if the work group has finished
         if(workgroup.data.length === workgroup.workers.length) {
           //Prepare array of data
@@ -129,7 +129,7 @@ module.exports = function(message, socket, eventEmitter, key, userID, groupMax){
             } else {
               //Valid work, delete the workgroup and create a datachunk from the
               //output
-              WorkGroup.remove({"_id": workgroup._id}, function(error) {
+              WorkGroup.remove({'_id': workgroup._id}, function(error) {
                 var newdatachunk = new DataChunk();
                 //Stringify the datachunk and store it
                 newdatachunk.data = JSON.stringify(datachunk);

@@ -1,5 +1,5 @@
 //Import mongoose, the display manager
-var mongoose = require("mongoose");
+var mongoose = require('mongoose');
 //Create a worker schema for storing clients
 var workGroupSchema = mongoose.schema({
   //Array of objects containing data from each client
@@ -12,4 +12,4 @@ var workGroupSchema = mongoose.schema({
 });
 
 //Export the schema for use
-module.exports = mongoose.model("WorkGroup", workGroupSchema);
+module.exports = mongoose.model('WorkGroup', workGroupSchema);

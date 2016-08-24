@@ -1,12 +1,12 @@
 //Import forge
-var forge = require("node-forge");
+var forge = require('node-forge');
 
 //Define encryption function
 module.exports.encrypt = function(key, iv, message) {
   //Create the cipher variable for forge
-  var cipher = forge.cipher.createCipher("AES-GCM", decrypted.key);
+  var cipher = forge.cipher.createCipher('AES-GCM', decrypted.key);
   //Start cipher
-  cipher.start({"iv": iv});
+  cipher.start({'iv': iv});
   //Update cipher with plaintext handshake
   cipher.update(forge.util.createBuffer(message));
   //Tell the cipher that we are finished
@@ -22,11 +22,11 @@ module.exports.encrypt = function(key, iv, message) {
 //Define decryption function
 module.exports.decrypt = function(key, iv, tag, encrypted) {
   //Create the decipher variable for forge
-  var decipher = forge.cipher.createDecipher("AES-GCM", key);
+  var decipher = forge.cipher.createDecipher('AES-GCM', key);
   //Start decipher
   decipher.start({
-    "iv": iv,
-    "tag": tag
+    'iv': iv,
+    'tag': tag
   });
   //Update the decipher with the encrypted text
   decipher.update(encrypted);

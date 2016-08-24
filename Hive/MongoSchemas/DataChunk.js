@@ -1,5 +1,5 @@
 //Import mongoose
-var mongoose = require("mongoose");
+var mongoose = require('mongoose');
 
 //Setup schema
 var dataChunkSchema = mongoose.schema({

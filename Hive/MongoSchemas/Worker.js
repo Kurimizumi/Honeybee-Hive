@@ -1,7 +1,7 @@
 //Import mongoose, the display manager
-var mongoose = require("mongoose");
+var mongoose = require('mongoose');
 //Import forge library for key generation
-var forge = require("node-forge");
+var forge = require('node-forge');
 //Create a worker schema for storing clients
 var workerSchema = mongoose.schema({
   //For verification
@@ -24,4 +24,4 @@ workerSchema.methods.generateRSAKeyPair = function(callback) {
 }
 
 //Export the schema for use
-module.exports = mongoose.model("Worker", workerSchema)
+module.exports = mongoose.model('Worker', workerSchema)

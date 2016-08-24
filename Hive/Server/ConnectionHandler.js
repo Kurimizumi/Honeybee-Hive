@@ -1,12 +1,12 @@
 //Import JsonSocket for easier JSON parsing with net
-var JsonSocket = require("json-socket");
+var JsonSocket = require('json-socket');
 //Import specific message functions
-var register = require("./Register.js");
-var handshake = require("./Handshake.js");
-var verify = require("./Verify.js");
-var request = require("./Request.js");
+var register = require('./Register.js');
+var handshake = require('./Handshake.js');
+var verify = require('./Verify.js');
+var request = require('./Request.js');
 //Import error handling function
-var Error = require("../../Utils/Error.js");
+var Error = require('../../Utils/Error.js');
 //Export the message handling function
 //Socket is the socket passed by index, eventEmitter is the Event
 //Listener/Emitter, workTimeout is the amount of time to wait before assuming
@@ -24,18 +24,18 @@ module.exports = function(socket, eventEmitter, key, workTimeout,
   //Define aesKey, verified, and id so they persist between messages
   var aesKey, verified, id;
   //Listen for a message from the client. message is a javascript object
-  socket.on("message", function(message) {
+  socket.on('message', function(message) {
     //If the required parameters do not exist
     if(!message ||
       !message.type
     ) {
       //Send a message to the client to let them know why it failed
-      Error.sendError(socket, "GENERIC_PARAMETERS_MISSING", true);
+      Error.sendError(socket, 'GENERIC_PARAMETERS_MISSING', true);
       //Return to prevent further execution
       return;
     }
     //If the message is to initiate a handshake to get an AES key (c->s);
-    if(message.type.toUpperCase() == "HANDSHAKE") {
+    if(message.type.toUpperCase() == 'HANDSHAKE') {
       //Call the handshake with the message, socket, eventEmitter and the
       //private RSA key
       aesKey = handshake(message, socket, eventEmitter, key);
@@ -52,12 +52,12 @@ module.exports = function(socket, eventEmitter, key, workTimeout,
       !message.iv
     ) {
       //Send an error to the client, but don't disconnect them
-      Error.sendError(socket, "GENERIC_MISSING_SECURITY_INFORMATION");
+      Error.sendError(socket, 'GENERIC_MISSING_SECURITY_INFORMATION');
       //Stop execution
       return;
     }
     //If the message is to register
-    if(message.type.toUpperCase() == "REGISTER") {
+    if(message.type.toUpperCase() == 'REGISTER') {
       //Call register function with the message, socket, eventEmitter and the
       //session key
       register(message, socket, eventEmitter, aesKey);
@@ -65,7 +65,7 @@ module.exports = function(socket, eventEmitter, key, workTimeout,
       return;
     }
     //If not verified
-    else if(message.type.toUpperCase() == "VERIFY") {
+    else if(message.type.toUpperCase() == 'VERIFY') {
       //Call verify function with message, socket, eventEmitter, session key,
       //and a callback due to mongodb being asynchronous
       verify(message, socket, eventEmitter, aesKey, function(verif) {
@@ -81,7 +81,7 @@ module.exports = function(socket, eventEmitter, key, workTimeout,
     //to the session.
     if(!verified) {
       //If the user has not verified who they are, do not continue
-      Error.sendError(socket, "STAGE_VERIFICATION_NOT_EXECUTED");
+      Error.sendError(socket, 'STAGE_VERIFICATION_NOT_EXECUTED');
       //Stop running
       return;
     }
@@ -92,12 +92,12 @@ module.exports = function(socket, eventEmitter, key, workTimeout,
     //      Mongoose query for finding incomplete work groups (arrays less than
     //      the desired length):
     //      {['Worker Array.' + maxNumber]: {$exists: false}}
-    if(message.type.toUpperCase() == "REQUEST") {
+    if(message.type.toUpperCase() == 'REQUEST') {
       request(message, socket, eventEmitter, aesKey, id, groupMax);
     }
     //TODO: Submit work for verification. Should check if the WorkGroup has
     //      matching results
-    else if(message.type.toUpperCase() == "SUBMIT") {
+    else if(message.type.toUpperCase() == 'SUBMIT') {
       submit(message, socket, eventEmitter, aesKey, id, groupMax);
     }
     //TODO: That's it???
