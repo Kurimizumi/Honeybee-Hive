@@ -32,6 +32,10 @@ var errors = [
 ]
 //Export error finding function
 module.exports.findError = function(error, type) {
+  //If the error is undefined, return undefined
+  if(typeof error == 'undefined') {
+    return undefined;
+  }
   //If the received type of error is a number
   if(typeof error == 'number') {
     //Then check if the type we wanted is a number, if so return error
