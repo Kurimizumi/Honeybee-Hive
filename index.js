@@ -33,7 +33,7 @@ var Hive = function(port, key, workTimeout, connectionTimeout, groupMax) {
     //Pass in the socket, the event emitter, and the key
     HiveConnectionHandler(socket, this.eventEmitter, this.key, this.workTimeout,
       this.connectionTimeout, this.groupMax);
-  });
+  }.bind(this));
   //Return the event emitter in order for the client to listen on it
   return this.eventEmitter;
 }
