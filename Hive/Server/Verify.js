@@ -7,7 +7,7 @@ var Error = require('../../Utils/Error.js');
 var forge = require('node-forge');
 
 //Mongoose schemas
-var Worker = require('../MognoSchemas/Worker.js');
+var Worker = require('../MongoSchemas/Worker.js');
 
 module.exports = function(message, mongoose, socket, eventEmitter, key, callback) {
   //Supposed user ID
