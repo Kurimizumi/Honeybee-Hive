@@ -89,6 +89,22 @@ module.exports = function(message, socket, eventEmitter, key, userID, groupMax){
           //Stop execution
           return;
         }
+        //Otherwise alert the user about the success
+        var jsonmsg = true;
+        //Generate an IV
+        var iv = AES.generateIV();
+        //Declare encrypted for try/catch
+        var encrypted;
+        //Try to encrypt
+        try {
+          encrypted = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
+        } catch {
+          //Tell the user about the error and halt
+          Error.sendError(socket, "SECURITY_ENCRYPTION_FAILURE", true);
+          //Stop execution
+          return;
+        }
+        socket.sendMessage("payload": encrypted[0], "tag": encrypted[1], "iv": encrypted[2]);
         //Check if the work group has finished
         if(workgroup.data.length === workgroup.workers.length) {
           //Prepare array of data
