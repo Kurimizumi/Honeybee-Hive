@@ -40,7 +40,7 @@ module.exports = function(message, socket, eventEmitter, key, callback) {
   var verify = decrypted.verify;
   //hash
   var md = decrypted.md;
-  //Make sure that the variable was actually sent
+  //Make sure that the required variables were actually sent
   if(!id || !verify || !md) {
     Error.sendError(socket, 'GENERIC_PARAMETERS_MISSING', true);
     //Stop further execution
