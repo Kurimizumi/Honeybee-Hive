@@ -55,7 +55,7 @@ var Honeybee = function(address, port, serverPublicKey) {
   this.eventHandler = new HoneybeeEventHandler();
   //Call the connection handler
   HoneybeeConnectionHandler(this.address, this.port, this.serverPublicKey, this.eventHandler);
-  return this.eventEmitter;
+  return this.eventHandler;
 }
 
 //Export functions
