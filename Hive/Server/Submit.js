@@ -17,9 +17,6 @@ var Error = require('../../Utils/Error.js');
 //Import AES for encryption
 var AES = require('../../Utils/AES.js');
 
-//Mongoose setup
-var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/hive');
 //Mongo schemas
 var WorkGroup = require('../MongoSchemas/WorkGroup.js');
 var DataChunk = require('../MongoSchemas/DataChunk.js');
@@ -106,7 +103,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
           //Stop execution
           return;
         }
-        socket.sendMessage('payload': encrypted[0], 'tag': encrypted[1], 'iv': encrypted[2]);
+        socket.sendMessage({'payload': encrypted[0], 'tag': encrypted[1], 'iv': encrypted[2]});
         //Check if the work group has finished
         if(workgroup.data.length === workgroup.workers.length) {
           //Prepare array of data

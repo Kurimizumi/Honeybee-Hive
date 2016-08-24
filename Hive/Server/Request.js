@@ -109,8 +109,8 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
                   return;
                 }
                 //Send work to client
-                socket.sendMessage('payload': encrypted[0], 'tag': encrypted[1],
-                  'iv': encrypted[2]);
+                socket.sendMessage({'payload': encrypted[0], 'tag': encrypted[1],
+                  'iv': encrypted[2]});
               });
             });
           } else {
