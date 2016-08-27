@@ -143,5 +143,5 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
           });
         }
       });
-    }
-}
+    });
+  }
