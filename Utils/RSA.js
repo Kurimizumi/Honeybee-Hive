@@ -15,7 +15,7 @@ module.exports.decrypt = function(privateKey, encrypted) {
   //Convert private key pem to forge's private key
   privateKey = forge.pki.privateKeyFromPem(privateKey);
   //Decrypt the message using the private key
-  var message = privateKey.decrypt(message);
+  var message = privateKey.decrypt(encrypted);
   //Return the decrypted message
   return message;
 }

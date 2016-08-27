@@ -4,7 +4,7 @@ var forge = require('node-forge');
 //Define encryption function
 module.exports.encrypt = function(key, iv, message) {
   //Create the cipher variable for forge
-  var cipher = forge.cipher.createCipher('AES-GCM', decrypted.key);
+  var cipher = forge.cipher.createCipher('AES-GCM', key);
   //Start cipher
   cipher.start({'iv': iv});
   //Update cipher with plaintext handshake
