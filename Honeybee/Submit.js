@@ -2,6 +2,8 @@
 var verify = require('./Verify.js');
 //Import AES module
 var AES = require('../Utils/AES.js');
+//Import error handler
+var Error = require("../Utils/Error.js");
 module.exports = function(socket, eventHandler, serverPublicKey,
   clientPrivateKey, clientID, data, callback) {
   verify(socket, eventHandler, serverPublicKey, clientPrivateKey, clientID,
