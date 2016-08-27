@@ -26,7 +26,7 @@ module.exports = function(socket, eventHandler, storage, serverPublicKey,
       //Try to decrypt
       var decrypted;
       try {
-        decrypted = AES.decrypt(sessionKey, iv, tag, payload);
+        decrypted = JSON.parse(AES.decrypt(sessionKey, iv, tag, payload));
       } catch (e) {
         console.log('Error: SECURITY_DECRYPTION_FAILURE');
         return;

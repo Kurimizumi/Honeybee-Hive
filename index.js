@@ -47,15 +47,16 @@ var HoneybeeEventHandler = require('./Honeybee/EventHandler.js');
 //address = string hostname of the server
 //port = listening port of the server
 //key = public RSA key of the server
-var Honeybee = function(address, port, serverPublicKey) {
+var Honeybee = function(address, port, serverPublicKey, callback) {
   this.address = address;
   this.port = port;
   this.serverPublicKey = serverPublicKey;
   //Create an instance of eventEmitter in order to be able to use it later
   this.eventHandler = new HoneybeeEventHandler();
+  //Pass the eventHandler back to the client
+  callback(this.eventHandler);
   //Call the connection handler
   HoneybeeConnectionHandler(this.address, this.port, this.serverPublicKey, this.eventHandler);
-  return this.eventHandler;
 }
 
 //Export functions
