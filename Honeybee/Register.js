@@ -40,6 +40,8 @@ module.exports = function(socket, eventHandler, storage, serverPublicKey,
     };
     //Declare encrypted variable
     var encrypted;
+    //Generate IV
+    var iv = AES.generateIV();
     //Try to encrypt
     try {
       encrypted = AES.encrypt(sessionKey, iv, JSON.stringify(jsonmsg));
