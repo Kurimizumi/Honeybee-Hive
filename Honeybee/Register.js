@@ -50,6 +50,6 @@ module.exports = function(socket, eventHandler, storage, serverPublicKey,
       return;
     }
     //Send registration message
-    socket.send({type: 'register', payload: encrypted[0], tag: encrypted[1], iv: encrypted[2]});
+    socket.sendMessage({type: 'register', payload: encrypted[0], tag: encrypted[1], iv: encrypted[2]});
   });
 }

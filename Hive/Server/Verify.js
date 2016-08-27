@@ -85,7 +85,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, callback
       return;
     }
     //Send to the user the status of if they are verified or not
-    socket.send({'payload': message[0], 'tag': message[1], 'iv': message[2]});
+    socket.sendMessage({'payload': message[0], 'tag': message[1], 'iv': message[2]});
     //Return to the callback
     return callback(verified);
   });
