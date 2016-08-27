@@ -5,6 +5,7 @@ var register = require('./Register.js');
 var handshake = require('./Handshake.js');
 var verify = require('./Verify.js');
 var request = require('./Request.js');
+var submit = require('./Submit.js');
 
 //Mongoose
 var mongoose = require('mongoose');

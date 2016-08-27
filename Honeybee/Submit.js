@@ -12,7 +12,7 @@ module.exports = function(socket, eventHandler, serverPublicKey,
         console.log('Error: SECURITY_VERIFICATION_FAILURE');
         return;
       }
-      //Receive work
+      //Receive status
       socket.once('message', function(message) {
         //If we get an error
         if(Error.findError(message.error)) {
