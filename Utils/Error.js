@@ -55,10 +55,10 @@ module.exports.findError = function(error, type) {
 //Send error helper function
 module.exports.sendError = function(socket, error, disconnect) {
   //Tell the user about the error
-  socket.sendMessage({'error': findError(error, 'number')}, function(error) {
+  socket.sendMessage({'error': module.exports.findError(error, 'number')}, function(error) {
     //If we wanted to disconnect, do so to prevent further communications
     if(disconnect) {
-      socket.disconnect();
+      socket.destroy();
     }
   })
 }
