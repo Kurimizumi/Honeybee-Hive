@@ -48,7 +48,7 @@ module.exports = function(message, socket, eventEmitter, key) {
   try {
     encrypted = AES.encrypt(decrypted.key, iv, JSON.stringify('success'));
   } catch (e) {
-    Error.sendError(socket, '0SECURITY_ENCRYPTION_FAILURE', true);
+    Error.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
     //Stop execution
     return;
   }
