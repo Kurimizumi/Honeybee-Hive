@@ -8,11 +8,20 @@ var Worker = require('../MongoSchemas/Worker.js');
 var WorkGroup = require('../MongoSchemas/WorkGroup.js');
 
 var checkForSubmittedData = function(array, userID) {
+  //Loop through the workgroup array
   for(var i = 0; i < array.length; i++) {
+    //Create a flag variable
+    var flag = true;
+    //Loop through the data in the workgroup array
     for(var j = 0; j < array[i].data.length; j++) {
-      if(array[j].worker != userID) {
-        return false;
+      //If the current worker is not equal to
+      if(array[j].worker == userID) {
+        flag = false;
       }
+    }
+    //Only if the worker wasn't found in the array
+    if(flag) {
+      return false;
     }
   }
   return true;
@@ -50,7 +59,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
       return;
     }
     //If the user has no pending work
-    if(workgroups.length == 0 || checkForSubmittedData(workgroups)) {
+    if(workgroups.length == 0 || checkForSubmittedData(workgroups, userID)) {
       //Find non full work groups
       WorkGroup.findOne(
         {
