@@ -3,9 +3,8 @@ var verify = require('./Verify.js');
 //Import AES module
 var AES = require('../Utils/AES.js');
 module.exports = function(socket, eventHandler, serverPublicKey,
-  clientPrivateKey, clientID, callback) {
+  clientPrivateKey, clientID, data, callback) {
   verify(socket, eventHandler, serverPublicKey, clientPrivateKey, clientID,
-    data,
     function(verified, sessionKey) {
       //If we're not verified
       if(!verified) {
