@@ -140,7 +140,10 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
                 //Stop execution
                 return;
               }
-              socket.sendMessage({'payload': encrypted[0], 'tag': encrypted[1], 'iv': encrypted[2]});
+              //Send message and destroy socket
+              socket.sendMessage({'payload': encrypted[0], 'tag': encrypted[1], 'iv': encrypted[2]}, function(error) {
+                socket.destroy();
+              });
             });
           }
         }

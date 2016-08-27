@@ -103,7 +103,10 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
           //Stop execution
           return;
         }
-        socket.sendMessage({'payload': encrypted[0], 'tag': encrypted[1], 'iv': encrypted[2]});
+        socket.sendMessage({'payload': encrypted[0], 'tag': encrypted[1], 'iv': encrypted[2]}, function(error) {
+          //Destroy socket
+          socket.destroy();
+        });
         //Check if the work group has finished
         if(workgroup.data.length === workgroup.workers.length) {
           //Prepare array of data
