@@ -58,7 +58,7 @@ module.exports = function(socket, eventHandler, serverPublicKey,
       //Try to encrypt
       var encrypted;
       try {
-        encrypted = AES.encrypt(sessionKey, iv, JSON.stringify(iv));
+        encrypted = AES.encrypt(sessionKey, iv, JSON.stringify(jsonmsg));
       } catch (e) {
         console.log('Error: SECURITY_ENCRYPTION_FAILURE');
         return;
