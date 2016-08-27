@@ -29,7 +29,7 @@ module.exports.decrypt = function(key, iv, tag, encrypted) {
     'tag': tag
   });
   //Update the decipher with the encrypted text
-  decipher.update(encrypted);
+  decipher.update(forge.util.createBuffer(encrypted));
   //Get decrypted text, or false if authentication failed
   var message = decipher.finish() ? decipher.output.toString() : false;
   //Return decrypted message or false to the caller
