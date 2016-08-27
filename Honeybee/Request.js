@@ -2,6 +2,8 @@
 var verify = require('./Verify.js');
 //Import AES module
 var AES = require('../Utils/AES.js');
+//Import error module
+var Error = require("../Utils/Error.js");
 module.exports = function(socket, eventHandler, serverPublicKey,
   clientPrivateKey, clientID, callback) {
   verify(socket, eventHandler, serverPublicKey, clientPrivateKey, clientID,
@@ -25,7 +27,7 @@ module.exports = function(socket, eventHandler, serverPublicKey,
         //Try to decrypt
         var decrypted;
         try {
-          decrypted = AES.decrypt(sessionKey, iv, tag, payload);
+          decrypted = JSON.parse(AES.decrypt(sessionKey, iv, tag, payload));
         } catch (e) {
           console.log('Error: SECURITY_DECRYPTION_FAILURE');
           return;
