@@ -7,8 +7,9 @@ var verify = require('./Verify.js');
 var request = require('./Request.js');
 
 //Mongoose
-var mongoose = require("mongoose");
-mongoose.connect("mongodb://localhost/hive");
+var mongoose = require('mongoose');
+mongoose.Promise = global.Promise;
+mongoose.connect('mongodb://localhost/hive');
 //Import error handling function
 var Error = require('../../Utils/Error.js');
 //Export the message handling function

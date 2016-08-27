@@ -7,7 +7,7 @@ var storage = require('node-persist');
 
 //Sections
 var register = require('./Register.js');
-var request = require("./Request.js");
+var request = require('./Request.js');
 
 //Export the main function
 module.exports = function(address, port, serverPublicKey, eventHandler) {
