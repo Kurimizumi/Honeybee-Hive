@@ -112,7 +112,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
           for(var i = 0; i < workgroup.data.length; i++) {
             //Strip entire array of data of worker ids, leaving only the data.
             //Also parse the data back into javascript from JSON
-            array.push(JSON.parse(workgroup.data.data));
+            array.push(JSON.parse(workgroup.data[i].data));
           }
           //Emit an event with the workdata
           eventEmitter.emit('workgroup_complete', array, function(datachunk) {
