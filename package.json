@@ -4,7 +4,7 @@
   "description": "A node module to allow for volunteer computing, like BOINC.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/mocha --reporter spec"
   },
   "repository": {
     "type": "git",
@@ -28,5 +28,9 @@
     "mongoose": "^4.5.9",
     "node-forge": "^0.6.42",
     "node-persist": "0.0.12"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.0.2"
   }
 }

@@ -41,7 +41,7 @@ module.exports.findError = function(error, type) {
     //Then check if the type we wanted is a number, if so return error
     if(type == 'number') return error;
     //Else, find and return the error name
-    return errors[error];
+    return errors[error] ? errors[error] : errors[0];
   } else {
     //Make sure the string is UpperCase
     error = error.toUpperCase();
@@ -49,7 +49,7 @@ module.exports.findError = function(error, type) {
     if(type == 'string') return error;
     //Otherwise find the error number. If the error is unknown, we return the
     //index 0
-    return errors.indexOf(error) ? errors.indexOf(error) : 0;
+    return errors.indexOf(error) !== -1 ? errors.indexOf(error) : 0;
   }
 }
 //Send error helper function

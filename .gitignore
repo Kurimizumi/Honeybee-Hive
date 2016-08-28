@@ -39,3 +39,6 @@ jspm_packages
 
 # REPL history
 .node_repl_history
+
+# openssl directory for mocha encryption utils testing
+openssl_test
