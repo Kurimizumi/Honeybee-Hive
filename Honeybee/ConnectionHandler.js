@@ -54,7 +54,6 @@ module.exports = function(address, port, serverPublicKey, eventHandler) {
     socket.on('connect', function() {
       //Call register function
       register(socket, eventHandler, storage, serverPublicKey, function(clientPrivateKey, clientID) {
-        console.log("this");
         //Once finished, get the private key and clientID call the main function
         main(address, port, key, eventHandler, clientPrivateKey, clientID);
       });

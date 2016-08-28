@@ -13,7 +13,7 @@ module.exports = function(socket, serverPublicKey, callback) {
   try {
     encrypted = RSA.encrypt(serverPublicKey, JSON.stringify({key: sessionKey}));
   } catch (e) {
-    console.log('1Error: SECURITY_ENCRYPTION_FAILURE');
+    console.log('Error: SECURITY_ENCRYPTION_FAILURE');
     return;
   }
   //Listen only once

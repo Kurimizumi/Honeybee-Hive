@@ -34,7 +34,7 @@ module.exports = function(message, socket, eventEmitter, key) {
   }
   //Check if key is in correct format
   if(typeof decrypted.key != 'string' ||
-    forge.util.decode64(decrypted.key.length) != 32
+    forge.util.decode64(decrypted.key).length != 32
   ) {
     //Not a string or not 256 bits, so fail
     Error.sendError(socket, 'SECURITY_INVALID_KEY', true);

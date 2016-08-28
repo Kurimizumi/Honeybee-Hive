@@ -12,9 +12,9 @@ module.exports.encrypt = function(key, iv, message) {
   //Tell the cipher that we are finished
   cipher.finish();
   //Get the ciphertext
-  var encrypted = forge.util.encode64(cipher.output);
+  var encrypted = forge.util.encode64(cipher.output.data.toString());
   //Get the authentication tag
-  var tag = forge.util.encode64(cipher.mode.tag);
+  var tag = forge.util.encode64(cipher.mode.tag.data.toString());
   //Return data to caller
   return [encrypted, tag, iv];
 }
