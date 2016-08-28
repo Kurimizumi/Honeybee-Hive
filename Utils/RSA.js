@@ -6,7 +6,7 @@ module.exports.encrypt = function(publicKey, message) {
   //Convert public key pem to forge's public key
   publicKey = forge.pki.publicKeyFromPem(publicKey);
   //Encrypt the message using the public key
-  var encrypted = forge.utils.encode64(publicKey.encrypt(message));
+  var encrypted = forge.util.encode64(publicKey.encrypt(message));
   //Return the encrypted message
   return encrypted;
 }
@@ -15,7 +15,7 @@ module.exports.decrypt = function(privateKey, encrypted) {
   //Convert private key pem to forge's private key
   privateKey = forge.pki.privateKeyFromPem(privateKey);
   //Decrypt the message using the private key
-  var message = privateKey.decrypt(forge.utils.decode64(encrypted));
+  var message = privateKey.decrypt(forge.util.decode64(encrypted));
   //Return the decrypted message
   return message;
 }
@@ -31,8 +31,8 @@ module.exports.sign = function(privateKey, message) {
   //Sign the message using the private key
   var signed = privateKey.sign(md);
   //Return the signed message and the hash in string form
-  return {'signed': forge.utils.encode64(signed),
-    'md': forge.utils.encode64(md.digest().bytes())};
+  return {'signed': forge.util.encode64(signed),
+    'md': forge.util.encode64(md.digest().bytes())};
 }
 
 //Define verification function
@@ -40,6 +40,6 @@ module.exports.verify = function(publicKey, message, hash) {
   //Convert public key pem to forge's public key
   publicKey = forge.pki.publicKeyFromPem(publicKey);
   //Verify message
-  return publicKey.verify(forge.utils.decode64(hash),
-    forge.utils.decode64(message));
+  return publicKey.verify(forge.util.decode64(hash),
+    forge.util.decode64(message));
 }
