@@ -39,7 +39,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
   }
   //Check that the user is verified still, if not disconnect them
   if(!decrypted) {
-    Error.error(socket, 'STAGE_HANDSHAKE_POST_COMPLETE_FAILURE', true);
+    Error.sendError(socket, 'STAGE_HANDSHAKE_POST_COMPLETE_FAILURE', true);
     //Stop execution
     return;
   }
@@ -47,7 +47,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
   var data = decrypted.data;
   //If no data was sent, error
   if(!data) {
-    Error.error(socket, 'STAGE_SUBMIT_NO_DATA', true);
+    Error.sendError(socket, 'STAGE_SUBMIT_NO_DATA', true);
     //Stop execution
     return;
   }
@@ -69,7 +69,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
       }
       //If no work group was found, error to the user
       if(!workgroup) {
-        Error.error(socket, 'DATABASE_NOT_FOUND', true);
+        Error.sendError(socket, 'DATABASE_NOT_FOUND', true);
         //Stop execution
         return;
       }
@@ -82,7 +82,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
       workgroup.save(function(error) {
         //If error, pass to user
         if(error) {
-          Error.error(socket, 'DATABASE_GENERIC', true);
+          Error.sendError(socket, 'DATABASE_GENERIC', true);
           //Stop execution
           return;
         }

@@ -25,16 +25,18 @@ var workHandler = function(work) {
   //Define our piSection variable, to store the part of pi we calculated
   var piSection = 0;
   //Define n for Leibniz's formula, and calculate current position in it
-  var n = 1 + (4*1000000000*work);
+  var n = 1 + (4*10000*work.counter);
   //Loop from 0 (incl) to 1000000000 (excl)
-  for(var i=0; i < 1000000000; i++) {
+  for(var i=0; i < 10000; i++) {
     //Do the current pair of the series
     piSection += (4/n)-(4/(n+2));
     //Add 4 to n
     n += 4;
   }
+  //Log the piSection we just calculated to the console
+  console.log("Calculated PiSection: " + piSection);
   //Submit the work and callback to the submitHandler
-  eventHandler.submit(submitHandler);
+  eventHandler.submit(piSection, submitHandler);
 }
 
 //Create the client, connecting to the server at ADDRESS:PORT using its public key

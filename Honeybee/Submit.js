@@ -27,7 +27,7 @@ module.exports = function(socket, eventHandler, serverPublicKey,
         //Try to decrypt
         var decrypted;
         try {
-          decrypted = AES.decrypt(sessionKey, iv, tag, payload);
+          decrypted = JSON.parse(AES.decrypt(sessionKey, iv, tag, payload));
         } catch(e) {
           console.log('Error: SECURITY_DECRYPTION_FAILURE');
           return;
@@ -37,8 +37,7 @@ module.exports = function(socket, eventHandler, serverPublicKey,
           console.log('Error: STAGE_HANDSHAKE_POST_COMPLETE_FAILURE');
           return;
         }
-        var success = decrypted.success;
-        callback(success);
+        callback(decrypted.success);
       });
       //Prepare message for sending
       var jsonmsg = {

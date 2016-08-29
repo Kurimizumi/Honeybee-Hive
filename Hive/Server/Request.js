@@ -157,7 +157,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
                   }
                   //Prepare message for encryption
                   var jsonmsg = {
-                    work: workgroup.work
+                    work: JSON.parse(workgroup.work)
                   }
                   //Generate IV
                   var iv = AES.generateIV();

@@ -37,6 +37,8 @@ module.exports = function(socket, eventHandler, serverPublicKey,
           console.log('Error: STAGE_HANDSHAKE_POST_COMPLETE_FAILURE');
           return;
         }
+        //I'm not sure why, but apparently we need to parse it again for it not to break
+        //when receiving a current workgroup
         var work = decrypted.work;
         callback(work);
       });

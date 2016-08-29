@@ -42,3 +42,6 @@ jspm_packages
 
 # openssl directory for mocha encryption utils testing
 openssl_test
+
+# examples persist directory
+examples/persist

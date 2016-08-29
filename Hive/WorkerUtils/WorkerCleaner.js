@@ -54,8 +54,8 @@ module.exports = function(mongoose, workTimeout, checkInterval) {
           //Loop through the workgroups, removing the worker
           for(var j = 0; j < workgroups.length; j++) {
             //Remove the worker from the workgroup
-            workgroups[i].workers.splice(workgroups[i].workers.indexOf(workers[i]), 1);
-            workgroups[i].save(function(error) {
+            workgroups[j].workers.splice(workgroups[j].workers.indexOf(workers[i]), 1);
+            workgroups[j].save(function(error) {
               //If error, tell the user
               if(error) {
                 console.log('Error: DATABASE_GENERIC');
