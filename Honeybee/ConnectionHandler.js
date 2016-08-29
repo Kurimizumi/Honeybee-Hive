@@ -55,7 +55,7 @@ module.exports = function(address, port, serverPublicKey, eventHandler) {
       //Call register function
       register(socket, eventHandler, storage, serverPublicKey, function(clientPrivateKey, clientID) {
         //Once finished, get the private key and clientID call the main function
-        main(address, port, key, eventHandler, clientPrivateKey, clientID);
+        main(address, port, serverPublicKey, eventHandler, clientPrivateKey, clientID);
       });
     });
     //Stop execution (main is called once connected)

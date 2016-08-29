@@ -33,7 +33,7 @@ module.exports = function(socket, eventHandler, storage, serverPublicKey,
       }
       var privateKey = decrypted.privateKey;
       storage.setItem('key', privateKey);
-      storage.setItem('id', message.id)
+      storage.setItem('id', message.id);
       callback(privateKey, message.id);
     });
     //Prepare register message
