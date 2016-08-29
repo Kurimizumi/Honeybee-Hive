@@ -3,7 +3,7 @@ var verify = require('./Verify.js');
 //Import AES module
 var AES = require('../Utils/AES.js');
 //Import error module
-var Error = require("../Utils/Error.js");
+var Error = require('../Utils/Error.js');
 module.exports = function(socket, eventHandler, serverPublicKey,
   clientPrivateKey, clientID, callback) {
   verify(socket, eventHandler, serverPublicKey, clientPrivateKey, clientID,

@@ -4,7 +4,7 @@ var AES = require('../Utils/AES.js');
 //Error handler
 var Error = require('../Utils/Error.js');
 //handshake
-var handshake = require("./Handshake.js");
+var handshake = require('./Handshake.js');
 //Export main function
 module.exports = function(socket, eventHandler, serverPublicKey,
   clientPrivateKey, clientID, callback) {

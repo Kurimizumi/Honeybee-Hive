@@ -1,14 +1,14 @@
 //Calculate pi using the Leibniz formula
 //Import the index file (usually honeybee-hive)
-var HoneybeeHive = require("../index.js");
+var HoneybeeHive = require('../index.js');
 //Import the fs module in order to import the key
-var fs = require("fs");
+var fs = require('fs');
 //Define various settings
 const PORT = 54321;
-const ADDRESS = "localhost";
+const ADDRESS = 'localhost';
 
 //Import key from filesystem
-var key = fs.readFileSync("public.pem", "utf8");
+var key = fs.readFileSync('public.pem', 'utf8');
 
 //Define eventHandler in order to assign it later
 var eventHandler;
@@ -16,7 +16,7 @@ var eventHandler;
 //Define our submission handler, to handle what happens once we submit work
 var submitHandler = function(success) {
   //Tell the client the status of our submission
-  console.log("Submission " + (success ? "succeeded" : "failed"));
+  console.log('Submission ' + (success ? 'succeeded' : 'failed'));
   //Request more work, and pass it to the work handler
   eventHandler.request(workHandler);
 }
@@ -42,7 +42,7 @@ HoneybeeHive.Honeybee(ADDRESS, PORT, key, function(evtHandler) {
   //Set eventHandler to the eventHandler
   eventHandler = evtHandler;
   //Callback once we know the client is registered and ready
-  eventHandler.once("registered", function() {
+  eventHandler.once('registered', function() {
     //Request our first piece of work
     eventHandler.request(workHandler);
   });
