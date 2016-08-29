@@ -1,5 +1,6 @@
 # Honeybee-Hive
 [![CircleCI](https://circleci.com/gh/Kurimizumi/Honeybee-Hive.svg?&style=shield)](https://circleci.com/gh/Kurimizumi/Honeybee-Hive)
+
 A node module to allow for volunteer computing, like BOINC.
 
 ## Install
