@@ -27,7 +27,7 @@ module.exports = function(socket, eventHandler, storage, serverPublicKey,
       var decrypted;
       try {
         decrypted = JSON.parse(AES.decrypt(sessionKey, iv, tag, payload));
-      } catch (e) {
+      } catch(e) {
         console.log('Error: SECURITY_DECRYPTION_FAILURE');
         return;
       }
@@ -47,11 +47,17 @@ module.exports = function(socket, eventHandler, storage, serverPublicKey,
     //Try to encrypt
     try {
       encrypted = AES.encrypt(sessionKey, iv, JSON.stringify(jsonmsg));
-    } catch (e) {
+    } catch(e) {
       console.log('Error: SECURITY_ENCRYPTION_FAILURE');
       return;
     }
     //Send registration message
-    socket.sendMessage({type: 'register', payload: encrypted[0], tag: encrypted[1], iv: encrypted[2]});
+    try {
+      socket.sendMessage({type: 'register', payload: encrypted[0], tag: encrypted[1], iv: encrypted[2]});
+    } catch(e) {
+      //Destroy socket
+      socket.destroy();
+      return;
+    }
   });
 }

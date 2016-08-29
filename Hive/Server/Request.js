@@ -38,7 +38,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
   //Try decrypting, otherwise pass error onto user
   try {
     decrypted = JSON.parse(AES.decrypt(key, iv, tag, payload));
-  } catch (e) {
+  } catch(e) {
     Error.sendError(socket, 'SECURITY_DECRYPTION_FAILURE', true);
     return;
   }
@@ -128,14 +128,20 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
                     //Try to encrypt, forward errors
                     try {
                       encrypted = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
-                    } catch (e) {
+                    } catch(e) {
                       Error.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
                       //Stop execution
                       return;
                     }
                     //Send work to client
-                    socket.sendMessage({'payload': encrypted[0], 'tag': encrypted[1],
-                    'iv': encrypted[2]});
+                    try {
+                      socket.sendMessage({'payload': encrypted[0], 'tag': encrypted[1],
+                        'iv': encrypted[2]});
+                    } catch(e) {
+                      //Destroy socket
+                      socket.destroy();
+                      return;
+                    }
                   });
                 });
               } else {
@@ -160,12 +166,18 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
                   //Attempt to encrypt, pass errors to user
                   try {
                     encrypted = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
-                  } catch (e) {
+                  } catch(e) {
                     Error.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
                     //Stop execution
                     return;
                   }
-                  socket.sendMessage({'payload': encrypted[0], 'tag': encrypted[1], 'iv': encrypted[2]});
+                  try {
+                    socket.sendMessage({'payload': encrypted[0], 'tag': encrypted[1], 'iv': encrypted[2]});
+                  } catch(e) {
+                    //Destroy socket
+                    socket.destroy();
+                    return;
+                  }
                 });
               }
             }

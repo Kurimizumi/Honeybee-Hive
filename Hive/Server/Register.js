@@ -48,16 +48,22 @@ module.exports = function(message, mongoose, socket, eventEmitter, key) {
       //Encrypt the message, passing errors to user
       try {
         message = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
-      } catch (e) {
+      } catch(e) {
         Error.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
         //Stop execution
         return;
       }
       //Send the message and the user's new ID
-      socket.sendMessage({'id': newWorker._id, 'payload': message[0], 'tag': message[1], 'iv': message[2]}, function(error) {
-        //Destroy the socket (make the user reconnect and verify etc)
+      try {
+        socket.sendMessage({'id': newWorker._id, 'payload': message[0], 'tag': message[1], 'iv': message[2]}, function(error) {
+          //Destroy the socket (make the user reconnect and verify etc)
+          socket.destroy();
+        });
+      } catch(e) {
+        //Destroy socket
         socket.destroy();
-      });
+        return;
+      }
     });
   });
 }

@@ -19,7 +19,7 @@ module.exports = function(message, socket, eventEmitter, key) {
   //Attempt to decrypt the payload
   try {
     decrypted = JSON.parse(RSA.decrypt(key, message.payload));
-  } catch (e) {
+  } catch(e) {
     //If an error was thrown stop
     Error.sendError(socket, 'SECURITY_DECRYPTION_FAILURE', true);
     //Return to prevent further execution
@@ -47,13 +47,19 @@ module.exports = function(message, socket, eventEmitter, key) {
   var encrypted;
   try {
     encrypted = AES.encrypt(decrypted.key, iv, JSON.stringify('success'));
-  } catch (e) {
+  } catch(e) {
     Error.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
     //Stop execution
     return;
   }
   //Send message to user
-  socket.sendMessage({'payload': encrypted[0], 'tag': encrypted[1], 'iv': encrypted[2]});
+  try {
+    socket.sendMessage({'payload': encrypted[0], 'tag': encrypted[1], 'iv': encrypted[2]});
+  } catch(e) {
+    //Destroy socket on failure
+    socket.destroy();
+    return;
+  }
   //Return the key to the connection handler
   return decrypted.key;
 }

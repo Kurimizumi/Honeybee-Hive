@@ -21,7 +21,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, callback
   //Catch any errors during decryption
   try {
     decrypted = JSON.parse(AES.decrypt(key, iv, tag, payload));
-  } catch (e) {
+  } catch(e) {
     //Forward error to user and disconnect
     Error.sendError(socket, 'SECURITY_DECRYPTION_FAILURE', true);
     //Prevent further execution
@@ -63,7 +63,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, callback
     //pass the error to the user
     try {
       verified = RSA.verify(publicKey, verify, md);
-    } catch (e) {
+    } catch(e) {
       Error.sendError(socket, 'SECURITY_VERIFICATION_FAILURE', true);
       //Stop execution
       return;
@@ -79,13 +79,19 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, callback
     //Encrypt message, passing errors to user
     try {
       var message = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
-    } catch (e) {
+    } catch(e) {
       Error.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
       //Stop execution
       return;
     }
     //Send to the user the status of if they are verified or not
-    socket.sendMessage({'payload': message[0], 'tag': message[1], 'iv': message[2]});
+    try {
+      socket.sendMessage({'payload': message[0], 'tag': message[1], 'iv': message[2]});
+    } catch(e) {
+      //Destroy socket
+      socket.destroy();
+      return;
+    }
     //Return to the callback
     return callback(verified);
   });
