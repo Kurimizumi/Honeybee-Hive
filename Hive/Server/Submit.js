@@ -111,7 +111,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
           return;
         }
         //Check if the work group has finished
-        if(workgroup.data.length === workgroup.workers.length) {
+        if(workgroup.data.length === groupMax) {
           //Prepare array of data
           var array = [];
           //Loop through entire data array
