@@ -13,6 +13,17 @@ var key = fs.readFileSync('public.pem', 'utf8');
 //Define eventHandler in order to assign it later
 var eventHandler;
 
+//Define settings object
+var settings = {
+  connection: {
+    hostname: 'localhost',
+    port: 54321
+  },
+  encryption: {
+    key: key
+  }
+}
+
 //Define our submission handler, to handle what happens once we submit work
 var submitHandler = function(success) {
   //Tell the client the status of our submission
@@ -39,8 +50,8 @@ var workHandler = function(work) {
   eventHandler.submit(piSection, submitHandler);
 }
 
-//Create the client, connecting to the server at ADDRESS:PORT using its public key
-HoneybeeHive.Honeybee(ADDRESS, PORT, key, function(evtHandler) {
+//Create the client, connecting to the server with settings object
+HoneybeeHive.Honeybee(settings, function(evtHandler) {
   //Set eventHandler to the eventHandler
   eventHandler = evtHandler;
   //Callback once we know the client is registered and ready
