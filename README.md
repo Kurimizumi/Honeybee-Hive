@@ -20,7 +20,7 @@ npm install https://github.com/Kurimizumi/Honeybee-Hive.git
 ###Client
 * Inline: Work is processed inside of the application, and then handed back to the server
 * Subprocess: Work is transferred to and from the server by the node application, but processed by a subprocess which is a different application
-* Database (not recommended): Work is added to a database, and another client periodically checks the database for new work, and then adds processed work back to the database 
+* Database (not recommended): Work is added to a database, and another client periodically checks the database for new work, and then adds processed work back to the database
 
 ## Usage
 See examples for working examples
@@ -30,14 +30,31 @@ See examples for working examples
 The server gets called like this:
 ```javascript
 var HoneybeeHive = require('honeybee-hive');
-var eventEmitter = HoneybeeHive.Hive(port, serverPrivateKey, workTimeout, sessionTimeout, checkTimeout);
+var eventEmitter = HoneybeeHive.Hive(settings);
 ```
 
-* The port is whatever port you wish the server to listen on.
-* The serverPrivateKey is a PEM encoded private key
-* The workTimeout is the time to wait until a client is assumed to not be completing the work set
-* The sessionTimeout is the time to wait until an TCP socket which is idle is assumed to be dead and is destroyed
-* The checkTimeout is how often the databse is checked for idle clients based on the workTimeout.
+The settings object is described below
+
+#### Settings
+```javascript
+var settings = {
+  connection: {
+    port: 54321 //Listening port, defaults to 54321
+  },
+  //All in milliseconds
+  timeouts: {
+    workTimeout: 60000, //Time to wait until a client is assumed to be dead and not completing the work set, allowing someone else to do so. Set to a value less than 1 to disable. Default: 60000
+    sessionTimeout: 30000, //Time to wait until a TCP socket which is idle is assumed to be dead and therefore destroyed. Default: 30000
+    checkTimeout: 10000, //How often to check for work timeouts. Default: 10000
+  },
+  work: {
+    groupMax: 10 //How many datasets must be submitted before the workgroup is considered completed. Default: 10
+  },
+  encryption: {
+    key: "some private key" //NO DEFAULT. YOU MUST SET THIS. The private key for the server
+  }
+}
+```
 
 #### Event Emitter
 The main function returns an event emitter which we can then listen on, like this:
@@ -110,7 +127,7 @@ The client gets called like this:
 ```javascript
 var HoneybeeHive = require('honeybee-hive');
 var eventHandler;
-HoneybeeHive.Honeybee(address, port, serverPublicKey, function(evtHandler) {
+HoneybeeHive.Honeybee(settings, function(evtHandler) {
   //Set eventHandler to evtHandler
   eventHandler = evtHandler;
   //Wait for us to be registered
@@ -121,11 +138,20 @@ HoneybeeHive.Honeybee(address, port, serverPublicKey, function(evtHandler) {
 });
 ```
 
-* The address is whatever hostname the server is being hosted on
-* The port is whatever port the server is listening on.
-* The serverPublicKey is a PEM encoded public key which is paired with the serverPrivateKey
-* The evtHandler in the callback function is the eventHandler
+The settings object is described below
 
+#### Settings
+```javascript
+var settings = {
+  connection: {
+    hostname: 'localhost', //The hostname the server is listening on, defaults to localhost
+    port: 54321 //Listening port, defaults to 54321
+  },
+  encryption: {
+    key: "some public key" //NO DEFAULT. YOU MUST SET THIS. The public key for the server
+  }
+}
+```
 
 #### Event Handler
 The main function returns an event handler which we can then call, like this:

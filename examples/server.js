@@ -5,7 +5,7 @@ var HoneybeeHive = require('../index.js');
 var fs = require('fs');
 //Define various setting constants
 const PORT = 54321; //Listening port
-const WORK_TIMEOUT = 30000; //Timeout until a client is assumed to not be completing the work
+const WORK_TIMEOUT = 60000; //Timeout until a client is assumed to not be completing the work
 const SESSION_TIMEOUT = 30000; //Timeout until a client is assumed to not be responding on the current session
 const GROUP_MAX = 2; //Amount of clients required to submit data for the work to be classed as completed
 const FINISH_COUNT = 100; //Amount of jobs to schedule
@@ -19,8 +19,24 @@ var serverPrivateKey = fs.readFileSync('private.pem', 'utf8');
 //Define pi variable to store pi for later
 var pi = 0;
 
+//Define server settings
+var settings = {
+  connection: {
+    port: 54321
+  },
+  encryption: {
+    key: serverPrivateKey
+  },
+  timeouts: {
+    workTimeout: WORK_TIMEOUT,
+    sessionTimeout: SESSION_TIMEOUT,
+  },
+  work: {
+    groupMax: GROUP_MAX
+  }
+}
 //Start the server
-var eventEmitter = HoneybeeHive.Hive(PORT, serverPrivateKey, WORK_TIMEOUT, SESSION_TIMEOUT);
+var eventEmitter = HoneybeeHive.Hive(settings);
 //Tell the user that the server has been started
 console.log('Server started');
 //Listen for create work events

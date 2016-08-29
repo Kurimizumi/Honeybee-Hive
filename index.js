@@ -3,6 +3,9 @@
 //by us
 var events = require('events');
 
+//Import deep-defaults, the default settings module
+var defaults = require('deep-defaults');
+
 //HIVE IMPORTS
 //Import net for JsonSocket
 var net = require('net');
@@ -17,21 +20,35 @@ var WorkerCleaner = require('./Hive/WorkerUtils/WorkerCleaner.js');
 //connectionTimeout = time to wait on an idle connection
 //groupMax = the maximum number of workers in a group
 //checkTimeout = how often workers are checked for being inactive
-var Hive = function(port, key, workTimeout, connectionTimeout, groupMax, checkTimeout) {
+var Hive = function(settings) {
   //Mongoose
   this.mongoose = require('mongoose');
   this.mongoose.Promise = global.Promise;
   this.mongoose.connect('mongodb://localhost/hive');
-  //Set arguments to variables
-  this.key = key;
-  this.workTimeout = workTimeout;
-  this.connectionTimeout = connectionTimeout;
-  this.groupMax = groupMax;
-  this.checkTimeout = checkTimeout || workTimeout;
+  //Set default settings
+  this.settings = defaults(settings,
+  {
+    connection: {
+      port: 54321
+    },
+    timeouts: {
+      workTimeout: 60000,
+      connectionTimeout: 30000,
+      checkTimeout: 10000
+    },
+    work: {
+      groupMax: 10
+    }
+  });
+  //Set settings to individual variables
+  this.port = this.settings.connection.port;
+  this.key = this.settings.encryption.key;
+  this.workTimeout = this.settings.timeouts.workTimeout;
+  this.connectionTimeout = this.settings.timeouts.connectionTimeout;
+  this.checkTimeout = this.settings.timeouts.checkTimeout;
+  this.groupMax = this.settings.work.groupMax;
   //Create an instance of the event emitter in order to use it later
   this.eventEmitter = new events.EventEmitter();
-  //Get the port from the function arguments
-  this.port = port;
   //Create a TCP server
   this.server = net.createServer();
   //Listen on the port defined above
@@ -58,16 +75,24 @@ var HoneybeeEventHandler = require('./Honeybee/EventHandler.js');
 //address = string hostname of the server
 //port = listening port of the server
 //key = public RSA key of the server
-var Honeybee = function(address, port, serverPublicKey, callback) {
-  this.address = address;
-  this.port = port;
-  this.serverPublicKey = serverPublicKey;
+var Honeybee = function(settings, callback) {
+  //Set default settings
+  this.settings = defaults(settings, {
+    connection: {
+      hostname: 'localhost',
+      port: 54321
+    }
+  });
+  //Set settings to indivial variables
+  this.hostname = this.settings.connection.hostname;
+  this.port = this.settings.connection.port;
+  this.key = this.settings.encryption.key;
   //Create an instance of eventEmitter in order to be able to use it later
   this.eventHandler = new HoneybeeEventHandler();
   //Pass the eventHandler back to the client
   callback(this.eventHandler);
   //Call the connection handler
-  HoneybeeConnectionHandler(this.address, this.port, this.serverPublicKey, this.eventHandler);
+  HoneybeeConnectionHandler(this.hostname, this.port, this.key, this.eventHandler);
 }
 
 //Export functions
