@@ -1,5 +1,5 @@
 //Calculate pi using the Leibniz formula
-//Import the index file (usually HoneybeeHive)
+//Import the index file (usually honeybee-hive)
 var HoneybeeHive = require("../index.js");
 //Import the fs module in order to import the key
 var fs = require("fs");
