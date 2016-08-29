@@ -60,100 +60,118 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
     }
     //If the user has no pending work
     if(workgroups.length == 0 || checkForSubmittedData(workgroups, userID)) {
-      //Find non full work groups
-      WorkGroup.findOne(
-        {
-          //All conditions should be true
-          $and: [
-            //Only workgroups which are not full
-            {['workers.' + groupMax]: {$exists: false}},
-            //And not in the workers section of the work group
-            {'workers': {$ne: userID}}
-          ]
-        },
-        function(error, workgroup) {
-          //Pass database errors onto the client
+      //Set the user's lastActiveTime to now
+      Worker.findOne({_id: userID}, function(error, worker) {
+        //If error, tell the user and stop executing
+        if(error) {
+          Error.sendError(socket, 'DATABASE_GENERIC', true);
+          //Stop execution
+          return;
+        }
+        //Set the lastActiveTime to now
+        worker.lastActive = new Date();
+        worker.save(function(error) {
+          //If error, tell the user and stop executing
           if(error) {
             Error.sendError(socket, 'DATABASE_GENERIC', true);
-            //Stop execution
             return;
           }
-          //If there are no non full work groups, create a new work group
-          if(!workgroup) {
-            //Emit a create_work event and pass in a callback with a work
-            //argument
-            eventEmitter.emit('create_work', function(work) {
-              //If there's no work left
-              if(!work) {
-                Error.sendError(socket, 'STAGE_REQUEST_NO_WORK', true);
-                //Stop execution
-                return;
-              }
-              //Create and populate the new group
-              var newworkgroup = new WorkGroup();
-              newworkgroup.workers = [userID];
-              newworkgroup.data = [];
-              newworkgroup.work = JSON.stringify(work);
-              newworkgroup.save(function(error) {
-                //If database error, pass it onto the user
-                if(error) {
-                  Error.sendError(socket, 'DATABASE_GENERIC', true);
-                  //Stop execution
-                  return;
-                }
-                //Prepare message for encryption
-                var jsonmsg = {
-                  work: work
-                }
-                //Generate IV
-                var iv = AES.generateIV();
-                //Declare encrypted variable for try/catch
-                var encrypted;
-                //Try to encrypt, forward errors
-                try {
-                  encrypted = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
-                } catch (e) {
-                  Error.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
-                  //Stop execution
-                  return;
-                }
-                //Send work to client
-                socket.sendMessage({'payload': encrypted[0], 'tag': encrypted[1],
-                  'iv': encrypted[2]});
-              });
-            });
-          } else {
-            //A valid work group has been found, add the new worker
-            workgroup.workers.push(userID);
-            //Save immediately, so it updates for other clients
-            workgroup.save(function(error) {
-              //Pass database errors to user
+          //Find non full work groups
+          WorkGroup.findOne(
+            {
+              //All conditions should be true
+              $and: [
+                //Only workgroups which are not full
+                {['workers.' + groupMax]: {$exists: false}},
+                //And not in the workers section of the work group
+                {'workers': {$ne: userID}}
+              ]
+            },
+            function(error, workgroup) {
+              //Pass database errors onto the client
               if(error) {
                 Error.sendError(socket, 'DATABASE_GENERIC', true);
-                //stop execution
-                return;
-              }
-              //Prepare message for encryption
-              var jsonmsg = {
-                work: workgroup.work
-              }
-              //Generate IV
-              var iv = AES.generateIV();
-              //Declare encrypted variable for try/catch block
-              var encrypted;
-              //Attempt to encrypt, pass errors to user
-              try {
-                encrypted = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
-              } catch (e) {
-                Error.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
                 //Stop execution
                 return;
               }
-              socket.sendMessage({'payload': encrypted[0], 'tag': encrypted[1], 'iv': encrypted[2]});
-            });
-          }
-        }
-      );
+              //If there are no non full work groups, create a new work group
+              if(!workgroup) {
+                //Emit a create_work event and pass in a callback with a work
+                //argument
+                eventEmitter.emit('create_work', function(work) {
+                  //If there's no work left
+                  if(!work) {
+                    Error.sendError(socket, 'STAGE_REQUEST_NO_WORK', true);
+                    //Stop execution
+                    return;
+                  }
+                  //Create and populate the new group
+                  var newworkgroup = new WorkGroup();
+                  newworkgroup.workers = [userID];
+                  newworkgroup.data = [];
+                  newworkgroup.work = JSON.stringify(work);
+                  newworkgroup.save(function(error) {
+                    //If database error, pass it onto the user
+                    if(error) {
+                      Error.sendError(socket, 'DATABASE_GENERIC', true);
+                      //Stop execution
+                      return;
+                    }
+                    //Prepare message for encryption
+                    var jsonmsg = {
+                      work: work
+                    }
+                    //Generate IV
+                    var iv = AES.generateIV();
+                    //Declare encrypted variable for try/catch
+                    var encrypted;
+                    //Try to encrypt, forward errors
+                    try {
+                      encrypted = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
+                    } catch (e) {
+                      Error.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
+                      //Stop execution
+                      return;
+                    }
+                    //Send work to client
+                    socket.sendMessage({'payload': encrypted[0], 'tag': encrypted[1],
+                    'iv': encrypted[2]});
+                  });
+                });
+              } else {
+                //A valid work group has been found, add the new worker
+                workgroup.workers.push(userID);
+                //Save immediately, so it updates for other clients
+                workgroup.save(function(error) {
+                  //Pass database errors to user
+                  if(error) {
+                    Error.sendError(socket, 'DATABASE_GENERIC', true);
+                    //stop execution
+                    return;
+                  }
+                  //Prepare message for encryption
+                  var jsonmsg = {
+                    work: workgroup.work
+                  }
+                  //Generate IV
+                  var iv = AES.generateIV();
+                  //Declare encrypted variable for try/catch block
+                  var encrypted;
+                  //Attempt to encrypt, pass errors to user
+                  try {
+                    encrypted = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
+                  } catch (e) {
+                    Error.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
+                    //Stop execution
+                    return;
+                  }
+                  socket.sendMessage({'payload': encrypted[0], 'tag': encrypted[1], 'iv': encrypted[2]});
+                });
+              }
+            }
+          );
+        });
+      });
     } else {
       //Pending work
       Error.sendError(socket, 'STAGE_REQUEST_PENDING_WORK', true);
