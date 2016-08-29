@@ -97,7 +97,7 @@ describe('Error handling', function() {
     expect(validNumberToString).to.equal('SECURITY_ENCRYPTION_FAILURE');
     expect(invalidNumberToString).to.equal('UNKNOWN_ERROR');
   });
-  it('returns correct type when it's defined', function() {
+  it('returns correct type when it\'s defined', function() {
     var numberToNumber = Error.findError(16, 'number');
     var stringToString = Error.findError('DATABASE_GENERIC', 'string');
     expect(numberToNumber).to.equal(16);
