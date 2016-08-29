@@ -8,8 +8,168 @@ A node module to allow for volunteer computing, like BOINC.
 npm install https://github.com/Kurimizumi/Honeybee-Hive.git
 ```
 
+## Notes
+* Alpha stages, expect breaking changes between versions currently
+
+## Example setups
+###Server
+* Inline: Work is processed and created inside of your node application
+* Subprocess: Work is created and processed inside of another application (can be in another language), and information is passed between the node app and your child process
+* Database (not recommended): Work is created and processed by another application, but it is added to a database. The node app finds work in the database and removes it, giving it to the client
+
+###Client
+* Inline: Work is processed inside of the application, and then handed back to the server
+* Subprocess: Work is transferred to and from the server by the node application, but processed by a subprocess which is a different application
+* Database (not recommended): Work is added to a database, and another client periodically checks the database for new work, and then adds processed work back to the database 
+
 ## Usage
-See examples for a working version
+See examples for working examples
+
+### Server
+#### Start function
+The server gets called like this:
+```javascript
+var HoneybeeHive = require('honeybee-hive');
+var eventEmitter = HoneybeeHive.Hive(port, serverPrivateKey, workTimeout, sessionTimeout, checkTimeout);
+```
+
+* The port is whatever port you wish the server to listen on.
+* The serverPrivateKey is a PEM encoded private key
+* The workTimeout is the time to wait until a client is assumed to not be completing the work set
+* The sessionTimeout is the time to wait until an TCP socket which is idle is assumed to be dead and is destroyed
+* The checkTimeout is how often the databse is checked for idle clients based on the workTimeout.
+
+#### Event Emitter
+The main function returns an event emitter which we can then listen on, like this:
+```javascript
+eventEmitter.on('eventName', function(eventArgs, eventArgs2) {
+  //Some code here to process event arguments
+});
+```
+The events are detailed below
+
+###### Create work
+We can listen for requests to create work like this:
+```javascript
+eventEmitter.on('create_work', function(callback) {
+  //We can send the work to the callback like this:
+  callback({
+    work: 0
+  });
+  //Or if there's no work remaining, we can send the callback a false value in JavaScript, like this
+  callback(false);
+  //Or like this
+  callback(0);
+  //Or this
+  callback(undefined);
+});
+```
+Because 0 is regarded as false in JavaScript, you should wrap numbers and booleans in a JavaScript object or array
+
+###### Workgroup complete
+When a set of work is complete, we must verify it. We can do so like this:
+```javascript
+eventEmitter.on('workgroup_complete', function(array, callback) {
+  //Make sure that all the values of the array are equal
+  for(var i = 0; i < array.length - 1; i++) {
+    //If they aren't equal
+    if(array[i] !== array[i+1]) {
+      //Then return false to the callback
+      callback(false);
+    }
+  }
+  //Otherwise, we can return the first element, since we just want to make sure that there's a consensus
+  //You could also return an average, or work backwards on the solution
+  callback(array[0]);
+});
+```
+
+Again, we need to take into account that 0 is a false value in javascript, so you should wrap it in a JavaScript object if you need to use it
+
+###### Datachunk creation
+When a workgroup is validated, we can then bring it together with other validated workgroups, or datachunks, like this:
+```javascript
+var total = 0;
+eventEmitter.on('new_datachunk', function(datachunk) {
+  //datachunk is the data that we submitted to the callback for workgroup_complete
+  //We access the count property and add it to the total, and then log it to the console
+  total += datachunk.count;
+  console.log(total);
+});
+```
+
+Remember that if order matters, then you'll need to submit an order with the work, and form a queue type system
+
+###### Notes
+
+* Progress is not saved. It's advisable that when you create work that you somehow store the work that has been created and what hasn't. Once work is created, it will be distributed to clients, but otherwise there is no way for you to know what work needs to be created still.
+
+### Client
+#### Start function
+The client gets called like this:
+```javascript
+var HoneybeeHive = require('honeybee-hive');
+var eventHandler;
+HoneybeeHive.Honeybee(address, port, serverPublicKey, function(evtHandler) {
+  //Set eventHandler to evtHandler
+  eventHandler = evtHandler;
+  //Wait for us to be registered
+  eventHandler.once('registered', function() {
+    //Request our first piece of work
+    eventHandler.request(workHandler);
+  })
+});
+```
+
+* The address is whatever hostname the server is being hosted on
+* The port is whatever port the server is listening on.
+* The serverPublicKey is a PEM encoded public key which is paired with the serverPrivateKey
+* The evtHandler in the callback function is the eventHandler
+
+
+#### Event Handler
+The main function returns an event handler which we can then call, like this:
+```javascript
+eventHandler.functionName(callback);
+```
+The callbacks are detailed below
+
+###### Request work
+We can request work like this:
+```javascript
+eventHandler.request(function(work) {
+  //work is the work that we specified on the server
+  //we should process it and then send it for submission
+});
+```
+
+###### Submit work
+We can submit processed work like this:
+```javascript
+eventHandler.submit(work, function(success) {
+  //success tells us if the submission was successful. You should not retry on failure, rather just request new work
+});
+```
+
+* work is the processed work that we wish to submit to the server
+
+###### Combining the two
+We can combine requesting and submitting like this:
+```javascript
+function workHandler(work) {
+  eventHandler.submit(work, submitHandler);
+}
+function submitHandler(success) {
+  eventHandler.request(workHandler);
+}
+//Request first work
+eventHandler.request(workHandler);
+```
+
+
+###### Notes
+
+* Progress is not saved. It's advisable that when you receive work that you save it for processing later, and also record the time of the request in order to avoid DATABASE_NOT_FOUND errors on the client
 
 ## License
 [ISC](https://github.com/Kurimizumi/Honeybee-Hive/blob/master/LICENSE.md)
