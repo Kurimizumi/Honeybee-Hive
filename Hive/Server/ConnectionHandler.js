@@ -7,18 +7,15 @@ var verify = require('./Verify.js');
 var request = require('./Request.js');
 var submit = require('./Submit.js');
 
-//Mongoose
-var mongoose = require('mongoose');
-mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost/hive');
+
 //Import error handling function
 var Error = require('../../Utils/Error.js');
 //Export the message handling function
+//mongoose is the mongoose instance which has been configured to the database,
 //Socket is the socket passed by index, eventEmitter is the Event
-//Listener/Emitter, workTimeout is the amount of time to wait before assuming
-//that the client will not respond to their work request, and connectionTimeout
-//is the time allowed for inactivity before the TCP socket is closed
-module.exports = function(socket, eventEmitter, key, workTimeout,
+//Listener/Emitter, and connectionTimeout is the time allowed for inactivity
+//before the TCP socket is closed
+module.exports = function(socket, eventEmitter, mongoose, key,
   connectionTimeout, groupMax) {
   //Wrap the socket with JsonSocket
   socket = new JsonSocket(socket);

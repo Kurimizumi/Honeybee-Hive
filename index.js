@@ -8,17 +8,26 @@ var events = require('events');
 var net = require('net');
 //Hive connection handler
 var HiveConnectionHandler = require('./Hive/Server/ConnectionHandler.js');
+//Import the WorkerCleaner
+var WorkerCleaner = require('./Hive/WorkerUtils/WorkerCleaner.js');
 //Create the Hive prototype, for the server
 //port = listening port
 //key = private RSA key
 //workTimeout = time to wait for work until client is assumed dead
 //connectionTimeout = time to wait on an idle connection
 //groupMax = the maximum number of workers in a group
-var Hive = function(port, key, workTimeout, connectionTimeout, groupMax) {
+//checkTimeout = how often workers are checked for being inactive
+var Hive = function(port, key, workTimeout, connectionTimeout, groupMax, checkTimeout) {
+  //Mongoose
+  this.mongoose = require('mongoose');
+  this.mongoose.Promise = global.Promise;
+  this.mongoose.connect('mongodb://localhost/hive');
+  //Set arguments to variables
   this.key = key;
   this.workTimeout = workTimeout;
   this.connectionTimeout = connectionTimeout;
   this.groupMax = groupMax;
+  this.checkTimeout = checkTimeout || workTimeout;
   //Create an instance of the event emitter in order to use it later
   this.eventEmitter = new events.EventEmitter();
   //Get the port from the function arguments
@@ -27,11 +36,13 @@ var Hive = function(port, key, workTimeout, connectionTimeout, groupMax) {
   this.server = net.createServer();
   //Listen on the port defined above
   this.server.listen(this.port);
+  //Start the WorkerCleaner
+  WorkerCleaner(this.mongoose, this.workTimeout, this.checkTimeout);
   //When we receive a connection, create a socket and pass it to the
   //HiveConnectionHandler
   this.server.on('connection', function(socket) {
     //Pass in the socket, the event emitter, and the key
-    HiveConnectionHandler(socket, this.eventEmitter, this.key, this.workTimeout,
+    HiveConnectionHandler(socket, this.eventEmitter, this.mongoose, this.key,
       this.connectionTimeout, this.groupMax);
   }.bind(this));
   //Return the event emitter in order for the client to listen on it
