@@ -5,7 +5,7 @@ A node module to allow for volunteer computing, like BOINC.
 
 ## Install
 ```bash
-npm install https://github.com/Kurimizumi/Honeybee-Hive.git
+npm install honeybee-hive --save
 ```
 
 ## Notes
