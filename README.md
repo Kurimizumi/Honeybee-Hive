@@ -51,7 +51,7 @@ var settings = {
     groupMax: 10 //How many datasets must be submitted before the workgroup is considered completed. Default: 10
   },
   encryption: {
-    key: "some private key" //NO DEFAULT. YOU MUST SET THIS. The private key for the server
+    key: "some private key" //NO DEFAULT. YOU MUST SET THIS. The PEM encoded RSA private key for the server
   }
 }
 ```
@@ -148,7 +148,7 @@ var settings = {
     port: 54321 //Listening port, defaults to 54321
   },
   encryption: {
-    key: "some public key" //NO DEFAULT. YOU MUST SET THIS. The public key for the server
+    key: "some public key" //NO DEFAULT. YOU MUST SET THIS. The PEM encoded RSA public key for the server
   }
 }
 ```
