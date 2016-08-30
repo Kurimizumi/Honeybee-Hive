@@ -1,5 +1,7 @@
 # Honeybee-Hive
-[![CircleCI](https://circleci.com/gh/Kurimizumi/Honeybee-Hive.svg?&style=shield)](https://circleci.com/gh/Kurimizumi/Honeybee-Hive)
+[![CircleCI][circleci-image]][circleci-link]
+[![NPM Version][version-image]][npm-link]
+[![NPM Download][download-image]][npm-link]
 
 A node module to allow for volunteer computing, like BOINC.
 
@@ -206,4 +208,11 @@ eventHandler.request(workHandler);
 * Progress is not saved. It's advisable that when you receive work that you save it for processing later, and also record the time of the request in order to avoid DATABASE_NOT_FOUND errors on the client
 
 ## License
-[ISC](https://github.com/Kurimizumi/Honeybee-Hive/blob/master/LICENSE.md)
+[ISC][license-link]
+
+[license-link]: https://github.com/Kurimizumi/Honeybee-Hive/blob/master/LICENSE.md
+[circleci-image]: https://circleci.com/gh/Kurimizumi/Honeybee-Hive.svg?&style=shield
+[circleci-link]: https://circleci.com/gh/Kurimizumi/Honeybee-Hive
+[npm-link]: https://npmjs.org/package/honeybee-hive
+[version-image]: https://img.shields.io/npm/v/honeybee-hive.svg
+[download-image]: https://img.shields.io/npm/dm/honeybee-hive.svg
