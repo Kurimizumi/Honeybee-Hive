@@ -1,6 +1,6 @@
 //Require the encryption modules
-var RSA = require('../Utils/RSA.js');
-var AES = require('../Utils/AES.js');
+var RSA = require('simple-encryption').RSA;
+var AES = require('simple-encryption').AES;
 //Error handler
 var Error = require('../Utils/Error.js');
 //Export main function

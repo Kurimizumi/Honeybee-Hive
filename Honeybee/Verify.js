@@ -1,6 +1,6 @@
 //Import encryption utils
-var RSA = require('../Utils/RSA.js');
-var AES = require('../Utils/AES.js');
+var RSA = require('simple-encryption').RSA;
+var AES = require('simple-encryption').AES;
 //Error handler
 var Error = require('../Utils/Error.js');
 //handshake
@@ -65,7 +65,7 @@ module.exports = function(socket, eventHandler, serverPublicKey,
       }
       //Send message to server
       try {
-        socket.sendMessage({type: 'verify', id: clientID, payload: encrypted[0], tag: encrypted[1], iv: encrypted[2]});
+        socket.sendMessage({type: 'verify', id: clientID, payload: encrypted.encrypted, tag: encrypted.tag, iv: iv});
       } catch(e) {
         //Destroy socket
         socket.destroy();

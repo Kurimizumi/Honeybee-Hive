@@ -1,7 +1,7 @@
 //Import verification module
 var verify = require('./Verify.js');
 //Import AES module
-var AES = require('../Utils/AES.js');
+var AES = require('simple-encryption').AES;
 //Import error handler
 var Error = require('../Utils/Error.js');
 module.exports = function(socket, eventHandler, serverPublicKey,
@@ -54,7 +54,7 @@ module.exports = function(socket, eventHandler, serverPublicKey,
         return;
       }
       try {
-        socket.sendMessage({type: 'submit', payload: encrypted[0], tag: encrypted[1], iv: encrypted[2]});
+        socket.sendMessage({type: 'submit', payload: encrypted.encrypted, tag: encrypted.tag, iv: iv});
       } catch(e) {
         //Destroy socket
         socket.destroy();

@@ -1,7 +1,7 @@
 //Import error handler
 var Error = require('../../Utils/Error.js');
 //Import AES library
-var AES = require('../../Utils/AES.js');
+var AES = require('simple-encryption').AES;
 
 //Schema imports
 var Worker = require('../MongoSchemas/Worker.js');
@@ -135,8 +135,8 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
                     }
                     //Send work to client
                     try {
-                      socket.sendMessage({'payload': encrypted[0], 'tag': encrypted[1],
-                        'iv': encrypted[2]});
+                      socket.sendMessage({'payload': encrypted.encrypted, 'tag': encrypted.tag,
+                        'iv': iv});
                     } catch(e) {
                       //Destroy socket
                       socket.destroy();
@@ -172,7 +172,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
                     return;
                   }
                   try {
-                    socket.sendMessage({'payload': encrypted[0], 'tag': encrypted[1], 'iv': encrypted[2]});
+                    socket.sendMessage({'payload': encrypted.encrypted, 'tag': encrypted.tag, 'iv': iv});
                   } catch(e) {
                     //Destroy socket
                     socket.destroy();

@@ -1,6 +1,6 @@
 //Import encryption functions
-var AES = require('../../Utils/AES.js');
-var RSA = require('../../Utils/RSA.js');
+var AES = require('simple-encryption').AES;
+var RSA = require('simple-encryption').RSA;
 //Import error handler
 var Error = require('../../Utils/Error.js');
 //Import forge
@@ -86,7 +86,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, callback
     }
     //Send to the user the status of if they are verified or not
     try {
-      socket.sendMessage({'payload': message[0], 'tag': message[1], 'iv': message[2]});
+      socket.sendMessage({'payload': message.encrypted, 'tag': message.tag, 'iv': iv});
     } catch(e) {
       //Destroy socket
       socket.destroy();

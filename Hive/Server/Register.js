@@ -1,7 +1,7 @@
 //Import forge
 var forge = require('node-forge');
 //AES helper
-var AES = require('../../Utils/AES.js');
+var AES = require('simple-encryption').AES;
 //Error handler
 var Error = require('../../Utils/Error.js');
 //Import worker schema in order to register the new worker
@@ -55,7 +55,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key) {
       }
       //Send the message and the user's new ID
       try {
-        socket.sendMessage({'id': newWorker._id, 'payload': message[0], 'tag': message[1], 'iv': message[2]}, function(error) {
+        socket.sendMessage({'id': newWorker._id, 'payload': message.encrypted, 'tag': message.tag, 'iv': iv}, function(error) {
           //Destroy the socket (make the user reconnect and verify etc)
           socket.destroy();
         });

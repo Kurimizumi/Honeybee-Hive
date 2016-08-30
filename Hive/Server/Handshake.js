@@ -3,8 +3,8 @@ var forge = require('node-forge');
 //Import our error handling module
 var Error = require('../../Utils/Error.js');
 //Import our encryption modules
-var RSA = require('../../Utils/RSA.js');
-var AES = require('../../Utils/AES.js');
+var RSA = require('simple-encryption').RSA;
+var AES = require('simple-encryption').AES;
 //Should return an AES key
 module.exports = function(message, socket, eventEmitter, key) {
   //If the encrypted payload is not present, fail
@@ -54,7 +54,7 @@ module.exports = function(message, socket, eventEmitter, key) {
   }
   //Send message to user
   try {
-    socket.sendMessage({'payload': encrypted[0], 'tag': encrypted[1], 'iv': encrypted[2]});
+    socket.sendMessage({'payload': encrypted.encrypted, 'tag': encrypted.tag, 'iv': iv});
   } catch(e) {
     //Destroy socket on failure
     socket.destroy();
