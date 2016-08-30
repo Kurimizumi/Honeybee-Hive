@@ -23,7 +23,7 @@ npm install https://github.com/Kurimizumi/Honeybee-Hive.git
 * Database (not recommended): Work is added to a database, and another client periodically checks the database for new work, and then adds processed work back to the database
 
 ## Usage
-See examples for working examples
+See [examples](https://github.com/Kurimizumi/Honeybee-Hive/tree/master/examples) for working examples, which might be easier to understand
 
 ### Server
 #### Start function
@@ -158,7 +158,15 @@ The main function returns an event handler which we can then call, like this:
 ```javascript
 eventHandler.functionName(callback);
 ```
-The callbacks are detailed below
+The callbacks and events are detailed below
+
+###### Ready
+We know that the client is ready to process work when the registered event is fired. We can listen to this by doing:
+```javascript
+eventHandler.once('registered', function() {
+  //Request work here
+});
+```
 
 ###### Request work
 We can request work like this:
