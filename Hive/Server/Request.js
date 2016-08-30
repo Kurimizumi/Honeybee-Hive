@@ -7,26 +7,6 @@ var AES = require('simple-encryption').AES;
 var Worker = require('../MongoSchemas/Worker.js');
 var WorkGroup = require('../MongoSchemas/WorkGroup.js');
 
-var checkForSubmittedData = function(array, userID) {
-  //Loop through the workgroup array
-  for(var i = 0; i < array.length; i++) {
-    //Create a flag variable
-    var flag = true;
-    //Loop through the data in the workgroup array
-    for(var j = 0; j < array[i].data.length; j++) {
-      //If the current worker is not equal to
-      if(array[j].worker == userID) {
-        flag = false;
-      }
-    }
-    //Only if the worker wasn't found in the array
-    if(flag) {
-      return false;
-    }
-  }
-  return true;
-}
-
 //Export the request handler
 module.exports = function(message, mongoose, socket, eventEmitter, key, userID, groupMax){
   //Get encryption information
@@ -51,7 +31,26 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
   }
   //Make sure that the user does not currently have a work group that they have
   //not submitted work to
-  WorkGroup.find({workers: userID}, function(error, workgroups) {
+  WorkGroup.find({
+    //All conditions should be true
+    $and: [
+      //And in the workers section of the work group
+      {'workers': userID},
+      //Only workgroups which the worker has not submitted data for
+      {
+        //In the data array
+        data: {
+          //Not equal to elemMatch (i.e, workgroups where data hasn't been submitted)
+          $not: {
+            //Match all documents with the the entry worker in the object array equal to the worker ID
+            $elemMatch: {
+              worker: userID
+            }
+          }
+        }
+      }
+    ]
+  }, function(error, workgroups) {
     //Pass database errors onto client
     if(error) {
       Error.sendError(socket, 'DATABASE_GENERIC', true);
