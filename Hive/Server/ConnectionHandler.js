@@ -16,7 +16,7 @@ var Error = require('../../Utils/Error.js');
 //Listener/Emitter, and connectionTimeout is the time allowed for inactivity
 //before the TCP socket is closed
 module.exports = function(socket, eventEmitter, mongoose, key,
-  connectionTimeout, groupMax) {
+  connectionTimeout, groupMax, disableRegistration) {
   //Wrap the socket with JsonSocket
   socket = new JsonSocket(socket);
   //Set an inactivity timeout of 30 seconds in order to prevent DOS attacks
@@ -58,7 +58,7 @@ module.exports = function(socket, eventEmitter, mongoose, key,
       return;
     }
     //If the message is to register
-    if(message.type.toUpperCase() === 'REGISTER') {
+    if(message.type.toUpperCase() === 'REGISTER' && !disableRegistration) {
       //Call register function with the message, socket, eventEmitter and the
       //session key
       register(message, mongoose, socket, eventEmitter, aesKey);

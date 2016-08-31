@@ -14,12 +14,6 @@ var hiveConnectionHandler = require('./Hive/Server/ConnectionHandler.js');
 //Import the WorkerCleaner
 var workerCleaner = require('./Hive/WorkerUtils/WorkerCleaner.js');
 //Create the Hive prototype, for the server
-//port = listening port
-//key = private RSA key
-//workTimeout = time to wait for work until client is assumed dead
-//connectionTimeout = time to wait on an idle connection
-//groupMax = the maximum number of workers in a group
-//checkTimeout = how often workers are checked for being inactive
 var Hive = function(settings) {
   //Mongoose
   this.mongoose = require('mongoose');
@@ -38,6 +32,9 @@ var Hive = function(settings) {
     },
     work: {
       groupMax: 10
+    },
+    sections: {
+      disableRegistration: false
     }
   });
   //Set settings to individual variables
@@ -47,6 +44,7 @@ var Hive = function(settings) {
   this.connectionTimeout = this.settings.timeouts.connectionTimeout;
   this.checkTimeout = this.settings.timeouts.checkTimeout;
   this.groupMax = this.settings.work.groupMax;
+  this.disableRegistration = this.settings.sections.disableRegistration;
   //Create an instance of the event emitter in order to use it later
   this.eventEmitter = new events.EventEmitter();
   //Create a TCP server
@@ -60,7 +58,7 @@ var Hive = function(settings) {
   this.server.on('connection', function(socket) {
     //Pass in the socket, the event emitter, and the key
     hiveConnectionHandler(socket, this.eventEmitter, this.mongoose, this.key,
-      this.connectionTimeout, this.groupMax);
+      this.connectionTimeout, this.groupMax, this.disableRegistration);
   }.bind(this));
   //Return the event emitter in order for the client to listen on it
   return this.eventEmitter;

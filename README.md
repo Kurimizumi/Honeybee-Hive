@@ -54,6 +54,9 @@ var settings = {
   },
   encryption: {
     key: "some private key" //NO DEFAULT. YOU MUST SET THIS. The PEM encoded RSA private key for the server
+  },
+  sections: {
+    disableRegistration: false //Disables registration if this value is true. Default: false
   }
 }
 ```

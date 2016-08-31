@@ -25,7 +25,7 @@ var pi = 0;
 //Define server settings
 var settings = {
   connection: {
-    port: 54321
+    port: PORT
   },
   encryption: {
     key: serverPrivateKey
@@ -36,6 +36,9 @@ var settings = {
   },
   work: {
     groupMax: GROUP_MAX
+  },
+  sections: {
+    disableRegistration: false
   }
 };
 //Start the server
