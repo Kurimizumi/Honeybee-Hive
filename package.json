@@ -1,6 +1,6 @@
 {
   "name": "honeybee-hive",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A node module to allow for volunteer computing, like BOINC.",
   "main": "index.js",
   "scripts": {
