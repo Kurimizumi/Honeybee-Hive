@@ -75,15 +75,10 @@ eventEmitter.on('create_work', function(callback) {
   callback({
     work: 0
   });
-  //Or if there's no work remaining, we can send the callback a false value in JavaScript, like this
-  callback(false);
-  //Or like this
-  callback(0);
-  //Or this
-  callback(undefined);
+  //Or if there's no work remaining, we can send the callback a null value in JavaScript, like this
+  callback(null);
 });
 ```
-Because 0 is regarded as false in JavaScript, you should wrap numbers and booleans in a JavaScript object or array
 
 ###### Workgroup complete
 When a set of work is complete, we must verify it. We can do so like this:
@@ -93,8 +88,8 @@ eventEmitter.on('workgroup_complete', function(array, callback) {
   for(var i = 0; i < array.length - 1; i++) {
     //If they aren't equal
     if(array[i] !== array[i+1]) {
-      //Then return false to the callback
-      callback(false);
+      //Then return null to the callback
+      callback(null);
     }
   }
   //Otherwise, we can return the first element, since we just want to make sure that there's a consensus
@@ -103,7 +98,6 @@ eventEmitter.on('workgroup_complete', function(array, callback) {
 });
 ```
 
-Again, we need to take into account that 0 is a false value in javascript, so you should wrap it in a JavaScript object if you need to use it
 
 ###### Datachunk creation
 When a workgroup is validated, we can then bring it together with other validated workgroups, or datachunks, like this:

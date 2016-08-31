@@ -9,7 +9,7 @@ module.exports = function(socket, eventHandler, serverPublicKey,
   verify(socket, eventHandler, serverPublicKey, clientPrivateKey, clientID,
     function(verified, sessionKey) {
     //If we're not verified
-    if(!verified) {
+    if(verified == null) {
       console.log('Error: SECURITY_VERIFICATION_FAILURE');
       return;
     }
@@ -33,7 +33,7 @@ module.exports = function(socket, eventHandler, serverPublicKey,
         return;
       }
       //If authentication failed
-      if(!decrypted) {
+      if(decrypted == null) {
         console.log('Error: STAGE_HANDSHAKE_POST_COMPLETE_FAILURE');
         return;
       }

@@ -9,7 +9,7 @@ const WORK_TIMEOUT = 60000; //Timeout until a client is assumed to not be
                             //completing the work
 const SESSION_TIMEOUT = 30000;  //Timeout until a client is assumed to not be
                                 //responding on the current session
-const GROUP_MAX = 2;  //Amount of clients required to submit data for the work
+const GROUP_MAX = 1;  //Amount of clients required to submit data for the work
                       //to be classed as completed
 const FINISH_COUNT = 100; //Amount of jobs to schedule
 //Define counter for amount of work pieces created
@@ -47,7 +47,7 @@ eventEmitter.on('create_work', function(callback) {
   //If we have 100 jobs submitted
   if(workCounter >= FINISH_COUNT) {
     //Tell the callback that there's no more work
-    callback(false);
+    callback(null);
   } else {
     //Tell the callback the work that we wish to create
     //In this case, we just supply the counter
@@ -73,8 +73,8 @@ eventEmitter.on('workgroup_complete', function(array, callback) {
     //We now have the individual work submitted by the clients
     //If the current value is not equal
     if(array[i] !== array[i+1]) {
-      //Call with a false javascript value (e.g. false, undefined, etc)
-      callback(false);
+      //Call with a null javascript value (i.e. null or undefined)
+      callback(null);
       //Return to prevent further execution
       return;
     }

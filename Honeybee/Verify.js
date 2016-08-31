@@ -31,7 +31,7 @@ module.exports = function(socket, eventHandler, serverPublicKey,
       }
 
       //If authentication failed
-      if(!decrypted) {
+      if(decrypted == null) {
         console.log('Error: STAGE_HANDSHAKE_POST_COMPLETE_FAILURE');
         return;
       }

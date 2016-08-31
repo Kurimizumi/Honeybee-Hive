@@ -35,7 +35,7 @@ module.exports = function(socket, serverPublicKey, callback) {
       return;
     }
     //Tag wasn't correct
-    if(!decrypted) {
+    if(decrypted == null) {
       console.log('Error: STAGE_HANDSHAKE_GENERIC');
       return;
     }

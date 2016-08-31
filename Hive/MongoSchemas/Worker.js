@@ -16,7 +16,7 @@ var workerSchema = mongoose.Schema({
 workerSchema.methods.generateRSAKeyPair = function(callback) {
   forge.pki.rsa.generateKeyPair({bits: 2048, workers: -1},
     function(error, keypair) {
-    if(!error) {
+    if(error == null) {
       return callback(keypair);
     } else {
       return callback(null);

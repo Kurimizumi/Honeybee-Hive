@@ -23,8 +23,8 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
     Error.sendError(socket, 'SECURITY_DECRYPTION_FAILURE', true);
     return;
   }
-  if(!decrypted ||
-    !decrypted.request ||
+  if(decrypted == null ||
+    decrypted.request == null ||
     decrypted.request.toUpperCase() !== 'REQUEST') {
       //Stop execution, we cannot verify the user...
       Error.sendError(socket, 'STAGE_HANDSHAKE_POST_COMPLETE_FAILURE', true);
@@ -96,12 +96,12 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
                 return;
               }
               //If there are no non full work groups, create a new work group
-              if(!workgroup) {
+              if(workgroup == null) {
                 //Emit a create_work event and pass in a callback with a work
                 //argument
                 eventEmitter.emit('create_work', function(work) {
                   //If there's no work left
-                  if(!work) {
+                  if(work == null) {
                     Error.sendError(socket, 'STAGE_REQUEST_NO_WORK', true);
                     //Stop execution
                     return;

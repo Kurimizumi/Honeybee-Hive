@@ -8,7 +8,7 @@ var AES = require('simple-encryption').AES;
 //Should return an AES key
 module.exports = function(message, socket, eventEmitter, key) {
   //If the encrypted payload is not present, fail
-  if(!message.payload) {
+  if(message.payload == null) {
     //Send an error, and disconnect
     Error.sendError(socket, 'GENERIC_PAYLOAD_MISSING', true);
     //Return to prevent further execution
@@ -26,7 +26,7 @@ module.exports = function(message, socket, eventEmitter, key) {
     return;
   }
   //Check if key exists in JSON
-  if(!decrypted.key) {
+  if(decrypted.key == null) {
     //Tell user that the key wasn't found
     Error.sendError(socket, 'STAGE_HANDSHAKE_KEY_MISSING', true);
     //Return to prevent further execution

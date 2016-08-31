@@ -39,7 +39,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
     return;
   }
   //Check that the user is verified still, if not disconnect them
-  if(!decrypted) {
+  if(decrypted == null) {
     Error.sendError(socket, 'STAGE_HANDSHAKE_POST_COMPLETE_FAILURE', true);
     //Stop execution
     return;
@@ -47,7 +47,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
   //Store decrypted json in required locations
   var data = decrypted.data;
   //If no data was sent, error
-  if(!data) {
+  if(data == null) {
     Error.sendError(socket, 'STAGE_SUBMIT_NO_DATA', true);
     //Stop execution
     return;
@@ -69,7 +69,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
         return;
       }
       //If no work group was found, error to the user
-      if(!workgroup) {
+      if(workgroup == null) {
         Error.sendError(socket, 'DATABASE_NOT_FOUND', true);
         //Stop execution
         return;
@@ -124,7 +124,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
           }
           //Emit an event with the workdata
           eventEmitter.emit('workgroup_complete', array, function(datachunk) {
-            if(!datachunk) {
+            if(datachunk == null) {
               //If not valid, clear the work group for it to be repopulated to
               //try again
               workgroup.workers = [];

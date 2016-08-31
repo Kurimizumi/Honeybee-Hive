@@ -45,7 +45,7 @@ module.exports = function(address, port, serverPublicKey, eventHandler) {
   //Load private key
   var clientPrivateKey = storage.getItem('key');
   //If not registered
-  if(!clientPrivateKey) {
+  if(clientPrivateKey == null) {
     //Create socket
     var socket = new JsonSocket(new net.Socket());
     //Connect to server

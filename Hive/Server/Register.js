@@ -14,7 +14,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key) {
   newWorker.generateRSAKeyPair(function(keyPair) {
     //If an error occured when generating the key, tell the user that an error
     //occured
-    if(!keyPair) {
+    if(keyPair == null) {
       //Stop on error
       Error.sendError(socket, 'SECURITY_KEY_GENERATION_FAILURE', true);
       //Return to stop further execution

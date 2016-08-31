@@ -29,9 +29,7 @@ module.exports = function(socket, eventEmitter, mongoose, key,
   //Listen for a message from the client. message is a javascript object
   socket.on('message', function(message) {
     //If the required parameters do not exist
-    if(!message ||
-      !message.type
-    ) {
+    if(message == null || message.type == null) {
       //Send a message to the client to let them know why it failed
       Error.sendError(socket, 'GENERIC_PARAMETERS_MISSING', true);
       //Return to prevent further execution
@@ -46,13 +44,13 @@ module.exports = function(socket, eventEmitter, mongoose, key,
       return;
     }
     //If a handshake has not taken place, do not continue
-    if(!aesKey) {
+    if(aesKey == null) {
       return;
     }
     //If the message doesn't look encrypted, do not continue
-    if(!message.payload ||
-      !message.tag ||
-      !message.iv
+    if(message.payload == null ||
+      message.tag == null ||
+      message.iv == null
     ) {
       //Send an error to the client, but don't disconnect them
       Error.sendError(socket, 'GENERIC_MISSING_SECURITY_INFORMATION');
@@ -82,7 +80,7 @@ module.exports = function(socket, eventEmitter, mongoose, key,
     }
     //Past this point the user should have their user ID verified and attached
     //to the session.
-    if(!verified) {
+    if(verified == null) {
       //If the user has not verified who they are, do not continue
       Error.sendError(socket, 'STAGE_VERIFICATION_NOT_EXECUTED');
       //Stop running
