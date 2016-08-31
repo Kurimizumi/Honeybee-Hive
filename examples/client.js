@@ -1,6 +1,6 @@
 //Calculate pi using the Leibniz formula
 //Import the index file (usually honeybee-hive)
-var HoneybeeHive = require('../index.js');
+var honeybeeHive = require('../index.js');
 //Import the fs module in order to import the key
 var fs = require('fs');
 //Define various settings
@@ -19,18 +19,18 @@ var settings = {
   encryption: {
     key: key
   }
-}
+};
 
 
 //Create the client, connecting to the server with settings object
-HoneybeeHive.Honeybee(settings, function(evtHandler) {
+honeybeeHive.Honeybee(settings, function(evtHandler) {
   //Define our submission handler, to handle what happens once we submit work
   var submitHandler = function(success) {
     //Tell the client the status of our submission
     console.log('Submission ' + (success ? 'succeeded' : 'failed'));
     //Request more work, and pass it to the work handler
     eventHandler.request(workHandler);
-  }
+  };
   //Define our work handler, to handle what happens when we receive work
   var workHandler = function(work) {
     //Define our piSection variable, to store the part of pi we calculated
@@ -45,10 +45,10 @@ HoneybeeHive.Honeybee(settings, function(evtHandler) {
       n += 4;
     }
     //Log the piSection we just calculated to the console
-    console.log("Calculated PiSection: " + piSection);
+    console.log('Calculated PiSection: ' + piSection);
     //Submit the work and callback to the submitHandler
     eventHandler.submit(piSection, submitHandler);
-  }
+  };
   //Set eventHandler to the eventHandler
   eventHandler = evtHandler;
   //Callback once we know the client is registered and ready

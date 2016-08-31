@@ -53,11 +53,12 @@ module.exports = function(socket, eventHandler, storage, serverPublicKey,
     }
     //Send registration message
     try {
-      socket.sendMessage({type: 'register', payload: encrypted.encrypted, tag: encrypted.tag, iv: iv});
+      socket.sendMessage({type: 'register', payload: encrypted.encrypted,
+        tag: encrypted.tag, iv: iv});
     } catch(e) {
       //Destroy socket
       socket.destroy();
       return;
     }
   });
-}
+};

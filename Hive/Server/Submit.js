@@ -22,13 +22,14 @@ var WorkGroup = require('../MongoSchemas/WorkGroup.js');
 var DataChunk = require('../MongoSchemas/DataChunk.js');
 
 //Export main submit function
-module.exports = function(message, mongoose, socket, eventEmitter, key, userID, groupMax){
+module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
+  groupMax) {
   //Get encryption information
   var payload = message.payload;
   var tag = message.tag;
   var iv = message.iv;
   //Declare decrypted variable for decryption attempt
-  var decrypted
+  var decrypted;
   //Try to decrypt, pass errors onto user
   try {
     decrypted = JSON.parse(AES.decrypt(key, iv, tag, payload));
@@ -104,7 +105,8 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
           return;
         }
         try {
-          socket.sendMessage({'payload': encrypted.encrypted, 'tag': encrypted.tag, 'iv': iv});
+          socket.sendMessage({'payload': encrypted.encrypted,
+            'tag': encrypted.tag, 'iv': iv});
         } catch(e) {
           //Destroy socket
           socket.destroy();
@@ -142,7 +144,8 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
                 newdatachunk.save(function(error) {
                   //Emit the final event telling the server that there's data
                   //to process
-                  eventEmitter.emit('new_datachunk', JSON.parse(newdatachunk.data));
+                  eventEmitter.emit('new_datachunk',
+                    JSON.parse(newdatachunk.data));
                 });
               });
             }
@@ -150,4 +153,4 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
         }
       });
     });
-  }
+  };

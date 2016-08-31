@@ -6,10 +6,11 @@
   "indent": 2,
   "newcap": true,
   "quotmark": "single",
-  "maxdepth": 3,
-  "maxstatements": 15,
+  "maxdepth": 5,
+  "maxstatements": 64,
   "maxlen": 80,
   "eqnull": true,
   "funcscope": true,
-  "node": true
+  "node": true,
+  "esversion": 6
 }

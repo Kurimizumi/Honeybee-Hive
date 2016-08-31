@@ -10,9 +10,9 @@ var defaults = require('deep-defaults');
 //Import net for JsonSocket
 var net = require('net');
 //Hive connection handler
-var HiveConnectionHandler = require('./Hive/Server/ConnectionHandler.js');
+var hiveConnectionHandler = require('./Hive/Server/ConnectionHandler.js');
 //Import the WorkerCleaner
-var WorkerCleaner = require('./Hive/WorkerUtils/WorkerCleaner.js');
+var workerCleaner = require('./Hive/WorkerUtils/WorkerCleaner.js');
 //Create the Hive prototype, for the server
 //port = listening port
 //key = private RSA key
@@ -54,21 +54,21 @@ var Hive = function(settings) {
   //Listen on the port defined above
   this.server.listen(this.port);
   //Start the WorkerCleaner
-  WorkerCleaner(this.mongoose, this.workTimeout, this.checkTimeout);
+  workerCleaner(this.mongoose, this.workTimeout, this.checkTimeout);
   //When we receive a connection, create a socket and pass it to the
   //HiveConnectionHandler
   this.server.on('connection', function(socket) {
     //Pass in the socket, the event emitter, and the key
-    HiveConnectionHandler(socket, this.eventEmitter, this.mongoose, this.key,
+    hiveConnectionHandler(socket, this.eventEmitter, this.mongoose, this.key,
       this.connectionTimeout, this.groupMax);
   }.bind(this));
   //Return the event emitter in order for the client to listen on it
   return this.eventEmitter;
-}
+};
 
 //HONEYBEE IMPORTS
 //Import Honeybee's ConnectionHandler
-var HoneybeeConnectionHandler = require('./Honeybee/ConnectionHandler.js');
+var honeybeeConnectionHandler = require('./Honeybee/ConnectionHandler.js');
 //Import Honeybee's EventHandler
 var HoneybeeEventHandler = require('./Honeybee/EventHandler.js');
 //Create Honeybee prototype, for the client
@@ -92,8 +92,9 @@ var Honeybee = function(settings, callback) {
   //Pass the eventHandler back to the client
   callback(this.eventHandler);
   //Call the connection handler
-  HoneybeeConnectionHandler(this.hostname, this.port, this.key, this.eventHandler);
-}
+  honeybeeConnectionHandler(this.hostname, this.port, this.key,
+    this.eventHandler);
+};
 
 //Export functions
 module.exports.Hive = Hive;

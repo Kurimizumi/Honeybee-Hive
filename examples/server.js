@@ -5,9 +5,12 @@ var HoneybeeHive = require('../index.js');
 var fs = require('fs');
 //Define various setting constants
 const PORT = 54321; //Listening port
-const WORK_TIMEOUT = 60000; //Timeout until a client is assumed to not be completing the work
-const SESSION_TIMEOUT = 30000; //Timeout until a client is assumed to not be responding on the current session
-const GROUP_MAX = 2; //Amount of clients required to submit data for the work to be classed as completed
+const WORK_TIMEOUT = 60000; //Timeout until a client is assumed to not be
+                            //completing the work
+const SESSION_TIMEOUT = 30000;  //Timeout until a client is assumed to not be
+                                //responding on the current session
+const GROUP_MAX = 2;  //Amount of clients required to submit data for the work
+                      //to be classed as completed
 const FINISH_COUNT = 100; //Amount of jobs to schedule
 //Define counter for amount of work pieces created
 var workCounter = 0;
@@ -34,7 +37,7 @@ var settings = {
   work: {
     groupMax: GROUP_MAX
   }
-}
+};
 //Start the server
 var eventEmitter = HoneybeeHive.Hive(settings);
 //Tell the user that the server has been started
@@ -70,7 +73,7 @@ eventEmitter.on('workgroup_complete', function(array, callback) {
     //We now have the individual work submitted by the clients
     //If the current value is not equal
     if(array[i] !== array[i+1]) {
-      //Call the callback with a false javascript value (e.g. false, undefined, etc)
+      //Call with a false javascript value (e.g. false, undefined, etc)
       callback(false);
       //Return to prevent further execution
       return;
@@ -85,7 +88,7 @@ eventEmitter.on('new_datachunk', function(datachunk) {
   //Add datachunk to pi
   pi += datachunk;
   //Log the current value of pi to the console
-  console.log("Current pi value: " + pi);
+  console.log('Current pi value: ' + pi);
 });
 
 

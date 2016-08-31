@@ -33,8 +33,8 @@ module.exports = function(message, socket, eventEmitter, key) {
     return;
   }
   //Check if key is in correct format
-  if(typeof decrypted.key != 'string' ||
-    forge.util.decode64(decrypted.key).length != 32
+  if(typeof decrypted.key !== 'string' ||
+    forge.util.decode64(decrypted.key).length !== 32
   ) {
     //Not a string or not 256 bits, so fail
     Error.sendError(socket, 'SECURITY_INVALID_KEY', true);
@@ -54,7 +54,8 @@ module.exports = function(message, socket, eventEmitter, key) {
   }
   //Send message to user
   try {
-    socket.sendMessage({'payload': encrypted.encrypted, 'tag': encrypted.tag, 'iv': iv});
+    socket.sendMessage({'payload': encrypted.encrypted, 'tag': encrypted.tag,
+      'iv': iv});
   } catch(e) {
     //Destroy socket on failure
     socket.destroy();
@@ -62,4 +63,4 @@ module.exports = function(message, socket, eventEmitter, key) {
   }
   //Return the key to the connection handler
   return decrypted.key;
-}
+};

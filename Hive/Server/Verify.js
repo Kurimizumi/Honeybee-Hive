@@ -9,7 +9,8 @@ var forge = require('node-forge');
 //Mongoose schemas
 var Worker = require('../MongoSchemas/Worker.js');
 
-module.exports = function(message, mongoose, socket, eventEmitter, key, callback) {
+module.exports = function(message, mongoose, socket, eventEmitter, key,
+  callback) {
   //Supposed user ID
   var id = message.id;
   //Get encryption information
@@ -73,12 +74,12 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, callback
     //Create message for encryption
     var jsonmsg = {
       'verified': verified
-    }
+    };
     //Declare message variable for try/catch
     var message;
     //Encrypt message, passing errors to user
     try {
-      var message = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
+      message = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
     } catch(e) {
       Error.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
       //Stop execution
@@ -86,7 +87,8 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, callback
     }
     //Send to the user the status of if they are verified or not
     try {
-      socket.sendMessage({'payload': message.encrypted, 'tag': message.tag, 'iv': iv});
+      socket.sendMessage({'payload': message.encrypted,
+        'tag': message.tag, 'iv': iv});
     } catch(e) {
       //Destroy socket
       socket.destroy();
@@ -95,4 +97,4 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, callback
     //Return to the callback
     return callback(verified);
   });
-}
+};

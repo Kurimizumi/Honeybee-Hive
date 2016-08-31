@@ -14,14 +14,15 @@ var workerSchema = mongoose.Schema({
 
 //Key generation method
 workerSchema.methods.generateRSAKeyPair = function(callback) {
-  forge.pki.rsa.generateKeyPair({bits: 2048, workers: -1}, function(error, keypair) {
+  forge.pki.rsa.generateKeyPair({bits: 2048, workers: -1},
+    function(error, keypair) {
     if(!error) {
       return callback(keypair);
     } else {
       return callback(null);
     }
   });
-}
+};
 
 //Export the schema for use
-module.exports = mongoose.model('Worker', workerSchema)
+module.exports = mongoose.model('Worker', workerSchema);

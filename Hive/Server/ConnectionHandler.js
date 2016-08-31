@@ -38,7 +38,7 @@ module.exports = function(socket, eventEmitter, mongoose, key,
       return;
     }
     //If the message is to initiate a handshake to get an AES key (c->s);
-    if(message.type.toUpperCase() == 'HANDSHAKE') {
+    if(message.type.toUpperCase() === 'HANDSHAKE') {
       //Call the handshake with the message, socket, eventEmitter and the
       //private RSA key
       aesKey = handshake(message, socket, eventEmitter, key);
@@ -60,7 +60,7 @@ module.exports = function(socket, eventEmitter, mongoose, key,
       return;
     }
     //If the message is to register
-    if(message.type.toUpperCase() == 'REGISTER') {
+    if(message.type.toUpperCase() === 'REGISTER') {
       //Call register function with the message, socket, eventEmitter and the
       //session key
       register(message, mongoose, socket, eventEmitter, aesKey);
@@ -68,7 +68,7 @@ module.exports = function(socket, eventEmitter, mongoose, key,
       return;
     }
     //If not verified
-    else if(message.type.toUpperCase() == 'VERIFY') {
+    else if(message.type.toUpperCase() === 'VERIFY') {
       //Call verify function with message, socket, eventEmitter, session key,
       //and a callback due to mongodb being asynchronous
       verify(message, mongoose, socket, eventEmitter, aesKey, function(verif) {
@@ -95,14 +95,14 @@ module.exports = function(socket, eventEmitter, mongoose, key,
     //      Mongoose query for finding incomplete work groups (arrays less than
     //      the desired length):
     //      {['Worker Array.' + maxNumber]: {$exists: false}}
-    if(message.type.toUpperCase() == 'REQUEST') {
+    if(message.type.toUpperCase() === 'REQUEST') {
       request(message, mongoose, socket, eventEmitter, aesKey, id, groupMax);
     }
     //TODO: Submit work for verification. Should check if the WorkGroup has
     //      matching results
-    else if(message.type.toUpperCase() == 'SUBMIT') {
+    else if(message.type.toUpperCase() === 'SUBMIT') {
       submit(message, mongoose, socket, eventEmitter, aesKey, id, groupMax);
     }
     //TODO: That's it???
   });
-}
+};

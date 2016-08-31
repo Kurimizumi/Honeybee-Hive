@@ -3,7 +3,9 @@ var Error = require('../Utils/Error.js');
 describe('Error handling', function() {
   it('converts error string to error number', function() {
     var validStringToNumber = Error.findError('SECURITY_DECRYPTION_FAILURE');
-    var invalidStringToNumber = Error.findError('SOME_RANDOM_ERROR_HERE_WHICH_IS_REALLY_LONG_AND_INVALID');
+    var invalidStringToNumber = Error.findError(
+      'SOME_RANDOM_ERROR_HERE_WHICH_IS_REALLY_LONG_AND_INVALID'
+    );
     expect(validStringToNumber).to.equal(18);
     expect(invalidStringToNumber).to.equal(0);
   });

@@ -5,7 +5,7 @@ var mongoose = require('mongoose');
 var dataChunkSchema = mongoose.Schema({
   //data of the DataChunk
   data: String
-})
+});
 
 //Export schema
 module.exports = mongoose.model('DataChunk', dataChunkSchema);

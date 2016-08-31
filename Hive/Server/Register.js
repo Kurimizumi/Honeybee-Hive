@@ -40,7 +40,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key) {
       //Export key and form the message
       var jsonmsg = {
         privateKey: forge.pki.privateKeyToPem(keyPair.privateKey)
-      }
+      };
       //Generate an IV
       var iv = AES.generateIV();
       //Declare message for try/catch
@@ -55,7 +55,8 @@ module.exports = function(message, mongoose, socket, eventEmitter, key) {
       }
       //Send the message and the user's new ID
       try {
-        socket.sendMessage({'id': newWorker._id, 'payload': message.encrypted, 'tag': message.tag, 'iv': iv}, function(error) {
+        socket.sendMessage({'id': newWorker._id, 'payload': message.encrypted,
+          'tag': message.tag, 'iv': iv}, function(error) {
           //Destroy the socket (make the user reconnect and verify etc)
           socket.destroy();
         });
@@ -66,4 +67,4 @@ module.exports = function(message, mongoose, socket, eventEmitter, key) {
       }
     });
   });
-}
+};

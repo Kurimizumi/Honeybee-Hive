@@ -29,7 +29,7 @@ module.exports = function(socket, serverPublicKey, callback) {
     //Try to decrypt
     var decrypted;
     try {
-      decrypted = JSON.parse(AES.decrypt(sessionKey, iv, tag, payload))
+      decrypted = JSON.parse(AES.decrypt(sessionKey, iv, tag, payload));
     } catch(e) {
       console.log('Error: SECURITY_DECRYPTION_FAILURE');
       return;
@@ -55,4 +55,4 @@ module.exports = function(socket, serverPublicKey, callback) {
     socket.destroy();
     return;
   }
-}
+};

@@ -8,7 +8,8 @@ var Worker = require('../MongoSchemas/Worker.js');
 var WorkGroup = require('../MongoSchemas/WorkGroup.js');
 
 //Export the request handler
-module.exports = function(message, mongoose, socket, eventEmitter, key, userID, groupMax){
+module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
+  groupMax) {
   //Get encryption information
   var payload = message.payload;
   var tag = message.tag;
@@ -40,9 +41,10 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
       {
         //In the data array
         data: {
-          //Not equal to elemMatch (i.e, workgroups where data hasn't been submitted)
+          //Not equal to elemMatch (i.e where data hasn't been submitted)
           $not: {
-            //Match all documents with the the entry worker in the object array equal to the worker ID
+            //Match all documents with the the worker in the submitted work
+            //object array equal to the worker ID
             $elemMatch: {
               worker: userID
             }
@@ -58,7 +60,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
       return;
     }
     //If the user has no pending work
-    if(workgroups.length == 0 || checkForSubmittedData(workgroups, userID)) {
+    if(workgroups.length === 0) {
       //Set the user's lastActiveTime to now
       Worker.findOne({_id: userID}, function(error, worker) {
         //If error, tell the user and stop executing
@@ -119,7 +121,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
                     //Prepare message for encryption
                     var jsonmsg = {
                       work: work
-                    }
+                    };
                     //Generate IV
                     var iv = AES.generateIV();
                     //Declare encrypted variable for try/catch
@@ -128,14 +130,15 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
                     try {
                       encrypted = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
                     } catch(e) {
-                      Error.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
+                      Error.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE',
+                        true);
                       //Stop execution
                       return;
                     }
                     //Send work to client
                     try {
-                      socket.sendMessage({'payload': encrypted.encrypted, 'tag': encrypted.tag,
-                        'iv': iv});
+                      socket.sendMessage({'payload': encrypted.encrypted,
+                        'tag': encrypted.tag, 'iv': iv});
                     } catch(e) {
                       //Destroy socket
                       socket.destroy();
@@ -157,7 +160,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
                   //Prepare message for encryption
                   var jsonmsg = {
                     work: JSON.parse(workgroup.work)
-                  }
+                  };
                   //Generate IV
                   var iv = AES.generateIV();
                   //Declare encrypted variable for try/catch block
@@ -166,12 +169,14 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
                   try {
                     encrypted = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
                   } catch(e) {
-                    Error.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
+                    Error.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE',
+                      true);
                     //Stop execution
                     return;
                   }
                   try {
-                    socket.sendMessage({'payload': encrypted.encrypted, 'tag': encrypted.tag, 'iv': iv});
+                    socket.sendMessage({'payload': encrypted.encrypted,
+                      'tag': encrypted.tag, 'iv': iv});
                   } catch(e) {
                     //Destroy socket
                     socket.destroy();
@@ -190,4 +195,4 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID, 
       return;
     }
   });
-}
+};
