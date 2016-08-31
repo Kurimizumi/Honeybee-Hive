@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Honeybee Hive : A node module to allow for volunteer computing. Like BOINC but for everyone.">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Honeybee Hive</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/Kurimizumi/Honeybee-Hive">View on GitHub</a>
+
+          <h1 id="project_title">Honeybee Hive</h1>
+          <h2 id="project_tagline">A node module to allow for volunteer computing. Like BOINC but for everyone.</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/Kurimizumi/Honeybee-Hive/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/Kurimizumi/Honeybee-Hive/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a id="honeybee-hive" class="anchor" href="#honeybee-hive" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Honeybee-Hive</h1>
+
+<p><a href="https://circleci.com/gh/Kurimizumi/Honeybee-Hive"><img src="https://circleci.com/gh/Kurimizumi/Honeybee-Hive.svg?&amp;style=shield" alt="CircleCI"></a>
+<a href="https://npmjs.org/package/honeybee-hive"><img src="https://img.shields.io/npm/v/honeybee-hive.svg" alt="NPM Version"></a>
+<a href="https://npmjs.org/package/honeybee-hive"><img src="https://img.shields.io/npm/dm/honeybee-hive.svg" alt="NPM Download"></a></p>
+
+<p>A node module to allow for volunteer computing, like BOINC.</p>
+
+<h2>
+<a id="install" class="anchor" href="#install" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Install</h2>
+
+<div class="highlight highlight-source-shell"><pre>npm install honeybee-hive --save</pre></div>
+
+<h2>
+<a id="notes" class="anchor" href="#notes" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Notes</h2>
+
+<ul>
+<li>Alpha stages, expect breaking changes between versions currently</li>
+</ul>
+
+<h2>
+<a id="example-setups" class="anchor" href="#example-setups" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Example setups</h2>
+
+<h3>
+<a id="server" class="anchor" href="#server" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Server</h3>
+
+<ul>
+<li>Inline: Work is processed and created inside of your node application</li>
+<li>Subprocess: Work is created and processed inside of another application (can be in another language), and information is passed between the node app and your child process</li>
+<li>Database (not recommended): Work is created and processed by another application, but it is added to a database. The node app finds work in the database and removes it, giving it to the client</li>
+</ul>
+
+<h3>
+<a id="client" class="anchor" href="#client" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Client</h3>
+
+<ul>
+<li>Inline: Work is processed inside of the application, and then handed back to the server</li>
+<li>Subprocess: Work is transferred to and from the server by the node application, but processed by a subprocess which is a different application</li>
+<li>Database (not recommended): Work is added to a database, and another client periodically checks the database for new work, and then adds processed work back to the database</li>
+</ul>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>See <a href="https://github.com/Kurimizumi/Honeybee-Hive/tree/master/examples">examples</a> for working examples, which might be easier to understand</p>
+
+<h3>
+<a id="server-1" class="anchor" href="#server-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Server</h3>
+
+<h4>
+<a id="start-function" class="anchor" href="#start-function" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Start function</h4>
+
+<p>The server gets called like this:</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">var</span> HoneybeeHive <span class="pl-k">=</span> <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">'</span>honeybee-hive<span class="pl-pds">'</span></span>);
+<span class="pl-k">var</span> eventEmitter <span class="pl-k">=</span> <span class="pl-smi">HoneybeeHive</span>.<span class="pl-en">Hive</span>(settings);</pre></div>
+
+<p>The settings object is described below</p>
+
+<h4>
+<a id="settings" class="anchor" href="#settings" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Settings</h4>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">var</span> settings <span class="pl-k">=</span> {
+  connection<span class="pl-k">:</span> {
+    port<span class="pl-k">:</span> <span class="pl-c1">54321</span> <span class="pl-c">//Listening port, defaults to 54321</span>
+  },
+  <span class="pl-c">//All in milliseconds</span>
+  timeouts<span class="pl-k">:</span> {
+    workTimeout<span class="pl-k">:</span> <span class="pl-c1">60000</span>, <span class="pl-c">//Time to wait until a client is assumed to be dead and not completing the work set, allowing someone else to do so. Set to a value less than 1 to disable. Default: 60000</span>
+    sessionTimeout<span class="pl-k">:</span> <span class="pl-c1">30000</span>, <span class="pl-c">//Time to wait until a TCP socket which is idle is assumed to be dead and therefore destroyed. Default: 30000</span>
+    checkTimeout<span class="pl-k">:</span> <span class="pl-c1">10000</span>, <span class="pl-c">//How often to check for work timeouts. Default: 10000</span>
+  },
+  work<span class="pl-k">:</span> {
+    groupMax<span class="pl-k">:</span> <span class="pl-c1">10</span> <span class="pl-c">//How many datasets must be submitted before the workgroup is considered completed. Default: 10</span>
+  },
+  encryption<span class="pl-k">:</span> {
+    key<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>some private key<span class="pl-pds">"</span></span> <span class="pl-c">//NO DEFAULT. YOU MUST SET THIS. The PEM encoded RSA private key for the server</span>
+  }
+}</pre></div>
+
+<h4>
+<a id="event-emitter" class="anchor" href="#event-emitter" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Event Emitter</h4>
+
+<p>The main function returns an event emitter which we can then listen on, like this:</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-smi">eventEmitter</span>.<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>eventName<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">eventArgs</span>, <span class="pl-smi">eventArgs2</span>) {
+  <span class="pl-c">//Some code here to process event arguments</span>
+});</pre></div>
+
+<p>The events are detailed below</p>
+
+<h6>
+<a id="create-work" class="anchor" href="#create-work" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Create work</h6>
+
+<p>We can listen for requests to create work like this:</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-smi">eventEmitter</span>.<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>create_work<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">callback</span>) {
+  <span class="pl-c">//We can send the work to the callback like this:</span>
+  <span class="pl-en">callback</span>({
+    work<span class="pl-k">:</span> <span class="pl-c1">0</span>
+  });
+  <span class="pl-c">//Or if there's no work remaining, we can send the callback a null value in JavaScript, like this</span>
+  <span class="pl-en">callback</span>(<span class="pl-c1">null</span>);
+});</pre></div>
+
+<h6>
+<a id="workgroup-complete" class="anchor" href="#workgroup-complete" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Workgroup complete</h6>
+
+<p>When a set of work is complete, we must verify it. We can do so like this:</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-smi">eventEmitter</span>.<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>workgroup_complete<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">array</span>, <span class="pl-smi">callback</span>) {
+  <span class="pl-c">//Make sure that all the values of the array are equal</span>
+  <span class="pl-k">for</span>(<span class="pl-k">var</span> i <span class="pl-k">=</span> <span class="pl-c1">0</span>; i <span class="pl-k">&lt;</span> <span class="pl-smi">array</span>.<span class="pl-c1">length</span> <span class="pl-k">-</span> <span class="pl-c1">1</span>; i<span class="pl-k">++</span>) {
+    <span class="pl-c">//If they aren't equal</span>
+    <span class="pl-k">if</span>(array[i] <span class="pl-k">!==</span> array[i<span class="pl-k">+</span><span class="pl-c1">1</span>]) {
+      <span class="pl-c">//Then return null to the callback</span>
+      <span class="pl-en">callback</span>(<span class="pl-c1">null</span>);
+    }
+  }
+  <span class="pl-c">//Otherwise, we can return the first element, since we just want to make sure that there's a consensus</span>
+  <span class="pl-c">//You could also return an average, or work backwards on the solution</span>
+  <span class="pl-en">callback</span>(array[<span class="pl-c1">0</span>]);
+});</pre></div>
+
+<h6>
+<a id="datachunk-creation" class="anchor" href="#datachunk-creation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Datachunk creation</h6>
+
+<p>When a workgroup is validated, we can then bring it together with other validated workgroups, or datachunks, like this:</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">var</span> total <span class="pl-k">=</span> <span class="pl-c1">0</span>;
+<span class="pl-smi">eventEmitter</span>.<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>new_datachunk<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">datachunk</span>) {
+  <span class="pl-c">//datachunk is the data that we submitted to the callback for workgroup_complete</span>
+  <span class="pl-c">//We access the count property and add it to the total, and then log it to the console</span>
+  total <span class="pl-k">+=</span> <span class="pl-smi">datachunk</span>.<span class="pl-smi">count</span>;
+  <span class="pl-en">console</span>.<span class="pl-c1">log</span>(total);
+});</pre></div>
+
+<p>Remember that if order matters, then you'll need to submit an order with the work, and form a queue type system</p>
+
+<h6>
+<a id="notes-1" class="anchor" href="#notes-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Notes</h6>
+
+<ul>
+<li>Progress is not saved. It's advisable that when you create work that you somehow store the work that has been created and what hasn't. Once work is created, it will be distributed to clients, but otherwise there is no way for you to know what work needs to be created still.</li>
+</ul>
+
+<h3>
+<a id="client-1" class="anchor" href="#client-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Client</h3>
+
+<h4>
+<a id="start-function-1" class="anchor" href="#start-function-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Start function</h4>
+
+<p>The client gets called like this:</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">var</span> HoneybeeHive <span class="pl-k">=</span> <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">'</span>honeybee-hive<span class="pl-pds">'</span></span>);
+<span class="pl-k">var</span> eventHandler;
+<span class="pl-smi">HoneybeeHive</span>.<span class="pl-en">Honeybee</span>(settings, <span class="pl-k">function</span>(<span class="pl-smi">evtHandler</span>) {
+  <span class="pl-c">//Set eventHandler to evtHandler</span>
+  eventHandler <span class="pl-k">=</span> evtHandler;
+  <span class="pl-c">//Wait for us to be registered</span>
+  <span class="pl-smi">eventHandler</span>.<span class="pl-en">once</span>(<span class="pl-s"><span class="pl-pds">'</span>registered<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>() {
+    <span class="pl-c">//Request our first piece of work</span>
+    <span class="pl-smi">eventHandler</span>.<span class="pl-en">request</span>(workHandler);
+  })
+});</pre></div>
+
+<p>The settings object is described below</p>
+
+<h4>
+<a id="settings-1" class="anchor" href="#settings-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Settings</h4>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">var</span> settings <span class="pl-k">=</span> {
+  connection<span class="pl-k">:</span> {
+    hostname<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>localhost<span class="pl-pds">'</span></span>, <span class="pl-c">//The hostname the server is listening on, defaults to localhost</span>
+    port<span class="pl-k">:</span> <span class="pl-c1">54321</span> <span class="pl-c">//Listening port, defaults to 54321</span>
+  },
+  encryption<span class="pl-k">:</span> {
+    key<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>some public key<span class="pl-pds">"</span></span> <span class="pl-c">//NO DEFAULT. YOU MUST SET THIS. The PEM encoded RSA public key for the server</span>
+  }
+}</pre></div>
+
+<h4>
+<a id="event-handler" class="anchor" href="#event-handler" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Event Handler</h4>
+
+<p>The main function returns an event handler which we can then call, like this:</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-smi">eventHandler</span>.<span class="pl-en">functionName</span>(callback);</pre></div>
+
+<p>The callbacks and events are detailed below</p>
+
+<h6>
+<a id="ready" class="anchor" href="#ready" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Ready</h6>
+
+<p>We know that the client is ready to process work when the registered event is fired. We can listen to this by doing:</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-smi">eventHandler</span>.<span class="pl-en">once</span>(<span class="pl-s"><span class="pl-pds">'</span>registered<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>() {
+  <span class="pl-c">//Request work here</span>
+});</pre></div>
+
+<h6>
+<a id="request-work" class="anchor" href="#request-work" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Request work</h6>
+
+<p>We can request work like this:</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-smi">eventHandler</span>.<span class="pl-en">request</span>(<span class="pl-k">function</span>(<span class="pl-smi">work</span>) {
+  <span class="pl-c">//work is the work that we specified on the server</span>
+  <span class="pl-c">//we should process it and then send it for submission</span>
+});</pre></div>
+
+<h6>
+<a id="submit-work" class="anchor" href="#submit-work" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Submit work</h6>
+
+<p>We can submit processed work like this:</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-smi">eventHandler</span>.<span class="pl-c1">submit</span>(work, <span class="pl-k">function</span>(<span class="pl-smi">success</span>) {
+  <span class="pl-c">//success tells us if the submission was successful. You should not retry on failure, rather just request new work</span>
+});</pre></div>
+
+<ul>
+<li>work is the processed work that we wish to submit to the server</li>
+</ul>
+
+<h6>
+<a id="combining-the-two" class="anchor" href="#combining-the-two" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Combining the two</h6>
+
+<p>We can combine requesting and submitting like this:</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">function</span> <span class="pl-en">workHandler</span>(<span class="pl-smi">work</span>) {
+  <span class="pl-smi">eventHandler</span>.<span class="pl-c1">submit</span>(work, submitHandler);
+}
+<span class="pl-k">function</span> <span class="pl-en">submitHandler</span>(<span class="pl-smi">success</span>) {
+  <span class="pl-smi">eventHandler</span>.<span class="pl-en">request</span>(workHandler);
+}
+<span class="pl-c">//Request first work</span>
+<span class="pl-smi">eventHandler</span>.<span class="pl-en">request</span>(workHandler);</pre></div>
+
+<h6>
+<a id="notes-2" class="anchor" href="#notes-2" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Notes</h6>
+
+<ul>
+<li>Progress is not saved. It's advisable that when you receive work that you save it for processing later, and also record the time of the request in order to avoid DATABASE_NOT_FOUND errors on the client</li>
+</ul>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h2>
+
+<p><a href="https://github.com/Kurimizumi/Honeybee-Hive/blob/master/LICENSE.md">ISC</a></p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Honeybee Hive maintained by <a href="https://github.com/Kurimizumi">Kurimizumi</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
