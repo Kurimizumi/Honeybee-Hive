@@ -23,7 +23,7 @@ var settings = {
 
 
 //Create the client, connecting to the server with settings object
-honeybeeHive.Honeybee(settings, function(evtHandler) {
+honeybeeHive.Honeybee(settings, function(eventHandler) {
   //Define our submission handler, to handle what happens once we submit work
   var submitHandler = function(success) {
     //Tell the client the status of our submission
@@ -49,8 +49,6 @@ honeybeeHive.Honeybee(settings, function(evtHandler) {
     //Submit the work and callback to the submitHandler
     eventHandler.submit(piSection, submitHandler);
   };
-  //Set eventHandler to the eventHandler
-  eventHandler = evtHandler;
   //Callback once we know the client is registered and ready
   eventHandler.once('registered', function() {
     //Request our first piece of work
