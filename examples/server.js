@@ -39,6 +39,9 @@ var settings = {
   },
   sections: {
     disableRegistration: false
+  },
+  database: {
+    databaseName: 'myProjectName'
   }
 };
 //Start the server

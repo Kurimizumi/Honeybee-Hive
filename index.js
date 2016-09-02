@@ -15,10 +15,6 @@ var hiveConnectionHandler = require('./Hive/Server/ConnectionHandler.js');
 var workerCleaner = require('./Hive/WorkerUtils/WorkerCleaner.js');
 //Create the Hive prototype, for the server
 var Hive = function(settings) {
-  //Mongoose
-  this.mongoose = require('mongoose');
-  this.mongoose.Promise = global.Promise;
-  this.mongoose.connect('mongodb://localhost/hive');
   //Set default settings
   this.settings = defaults(settings,
   {
@@ -35,8 +31,18 @@ var Hive = function(settings) {
     },
     sections: {
       disableRegistration: false
+    },
+    database: {
+      hostname: 'localhost',
+      databaseName: 'hive'
     }
   });
+  //Mongoose
+  this.mongoose = require('mongoose');
+  this.mongoose.Promise = global.Promise;
+  this.mongoose.connect('mongodb://' + this.settings.database.hostname +
+    (this.settings.database.port ? ':' + this.settings.database.port : '') +
+    '/' + this.settings.database.databaseName);
   //Set settings to individual variables
   this.port = this.settings.connection.port;
   this.key = this.settings.encryption.key;

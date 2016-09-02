@@ -57,6 +57,11 @@ var settings = {
   },
   sections: {
     disableRegistration: false //Disables registration if this value is true. Default: false
+  },
+  database: {
+    hostname: 'localhost', //Sets the hostname for the mongodb database. Default: localhost
+    port: '27017', //Sets the port for the mongodb databse. Default: none
+    databaseName: 'hive' //The name for the mongodb database. You could set this to your project name. Default: hive
   }
 }
 ```
