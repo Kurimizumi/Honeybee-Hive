@@ -1,7 +1,7 @@
 'use strict';
 //Require Worker and WorkGroup
-let Worker = require('../MongoSchemas/Worker.js');
-let WorkGroup = require('../MongoSchemas/WorkGroup');
+const Worker = require('../MongoSchemas/Worker.js');
+const WorkGroup = require('../MongoSchemas/WorkGroup');
 //Export main function
 module.exports = function(mongoose, settings) {
   //If workTimeout is less than or equal to 0, do not use a timeout
@@ -27,7 +27,7 @@ module.exports = function(mongoose, settings) {
       }
       //Define functions for use within loops
       //Function for database errors in order to tell the user
-      let saveWorkGroup = function(error) {
+      const saveWorkGroup = function(error) {
         //If error, tell the user
         if(error) {
           console.log('Error: DATABASE_GENERIC');
@@ -36,7 +36,7 @@ module.exports = function(mongoose, settings) {
       //Define i for later
       let i = 0;
       //Function for searching workgroups
-      let searchWorkGroup = function(error, workgroups) {
+      const searchWorkGroup = function(error, workgroups) {
         //Check for errors, if so don't continue
         if(error) {
           //Log to the console

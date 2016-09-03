@@ -14,21 +14,21 @@
 */
 
 //Import error handler
-let errorHandler = require('../../Utils/errorHandler.js');
+const errorHandler = require('../../Utils/errorHandler.js');
 //Import AES for encryption
-let AES = require('simple-encryption').AES;
+const AES = require('simple-encryption').AES;
 
 //Mongo schemas
-let WorkGroup = require('../MongoSchemas/WorkGroup.js');
-let DataChunk = require('../MongoSchemas/DataChunk.js');
+const WorkGroup = require('../MongoSchemas/WorkGroup.js');
+const DataChunk = require('../MongoSchemas/DataChunk.js');
 
 //Export main submit function
 module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
   groupMax) {
   //Get encryption information
-  let payload = message.payload;
-  let tag = message.tag;
-  let iv = message.iv;
+  const payload = message.payload;
+  const tag = message.tag;
+  const iv = message.iv;
   //Declare decrypted letiable for decryption attempt
   let decrypted;
   //Try to decrypt, pass errors onto user
@@ -47,7 +47,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
     return;
   }
   //Store decrypted json in required locations
-  let data = decrypted.data;
+  const data = decrypted.data;
   //If no data was sent, error
   if(data == null) {
     errorHandler.sendError(socket, 'STAGE_SUBMIT_NO_DATA', true);
@@ -90,11 +90,11 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
           return;
         }
         //Otherwise alert the user about the success
-        let jsonmsg = {
+        const jsonmsg = {
           success: true
         };
         //Generate an IV
-        let iv = AES.generateIV();
+        const iv = AES.generateIV();
         //Declare encrypted for try/catch
         let encrypted;
         //Try to encrypt

@@ -1,6 +1,6 @@
 'use strict';
 //List of errors
-let errors = [
+const errors = [
   //Unknown errors
   'UNKNOWN_ERROR', //ONLY FOR USE IF THE ERROR IS COMPLETELY UNKNOWN
   //Database errors

@@ -1,11 +1,11 @@
 'use strict';
 //Import forge for encryption
-let forge = require('node-forge');
+const forge = require('node-forge');
 //Import our error handling module
-let errorHandler = require('../../Utils/errorHandler.js');
+const errorHandler = require('../../Utils/errorHandler.js');
 //Import our encryption modules
-let RSA = require('simple-encryption').RSA;
-let AES = require('simple-encryption').AES;
+const RSA = require('simple-encryption').RSA;
+const AES = require('simple-encryption').AES;
 //Should return an AES key
 module.exports = function(message, socket, eventEmitter, key) {
   //If the encrypted payload is not present, fail
@@ -43,7 +43,7 @@ module.exports = function(message, socket, eventEmitter, key) {
     return;
   }
   //Generate a 12 byte IV for AES-GCM
-  let iv = AES.generateIV();
+  const iv = AES.generateIV();
   //Declare encrypted letiable for try/catch
   let encrypted;
   try {

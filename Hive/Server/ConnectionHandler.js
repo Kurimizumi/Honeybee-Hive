@@ -1,16 +1,16 @@
 'use strict';
 //Import JsonSocket for easier JSON parsing with net
-let JsonSocket = require('json-socket');
+const JsonSocket = require('json-socket');
 //Import specific message functions
-let register = require('./Register.js');
-let handshake = require('./Handshake.js');
-let verify = require('./Verify.js');
-let request = require('./Request.js');
-let submit = require('./Submit.js');
+const register = require('./Register.js');
+const handshake = require('./Handshake.js');
+const verify = require('./Verify.js');
+const request = require('./Request.js');
+const submit = require('./Submit.js');
 
 
 //Import error handling function
-let errorHandler = require('../../Utils/errorHandler.js');
+const errorHandler = require('../../Utils/errorHandler.js');
 //Export the message handling function
 //mongoose is the mongoose instance which has been configured to the database,
 //Socket is the socket passed by index, eventEmitter is the Event

@@ -15,12 +15,12 @@ const GROUP_MAX = 1;  //Amount of clients required to submit data for the work
                       //to be classed as completed
 const FINISH_COUNT = 100; //Amount of jobs to schedule
 //Define counter for amount of work pieces created
-let workCounter = 0;
+let workCounter = 1;
 //Define counter for how many times work has been verified
-let completeCounter = 0;
+const completeCounter = 1;
 
 //Read the PEM encoded private key from the file system
-let serverPrivateKey = fs.readFileSync('private.pem', 'utf8');
+const serverPrivateKey = fs.readFileSync('private.pem', 'utf8');
 //Define pi letiable to store pi for later
 let pi = 0;
 
@@ -47,7 +47,7 @@ let settings = {
   }
 };
 //Start the server
-let eventEmitter = HoneybeeHive.Hive(settings);
+const eventEmitter = HoneybeeHive.Hive(settings);
 //Tell the user that the server has been started
 console.log('Server started');
 //Listen for create work events

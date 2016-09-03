@@ -1,10 +1,10 @@
 'use strict';
 //Import mongoose, the display manager
-let mongoose = require('mongoose');
+const mongoose = require('mongoose');
 //Import forge library for key generation
-let forge = require('node-forge');
+const forge = require('node-forge');
 //Create a worker schema for storing clients
-let workerSchema = mongoose.Schema({
+const workerSchema = mongoose.Schema({
   //For verification
   publicKey: String,
   //Get registration date (future functionality)
@@ -14,7 +14,8 @@ let workerSchema = mongoose.Schema({
 });
 
 //Key generation method
-workerSchema.methods.generateRSAKeyPair = function(callback) {
+workerSchema.methods.generateRSAKeyPair = function(callback) { 
+  // object properties can be added to const variables
   forge.pki.rsa.generateKeyPair({bits: 2048, workers: -1},
     function(error, keypair) {
     if(error == null) {

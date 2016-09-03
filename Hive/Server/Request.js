@@ -1,20 +1,20 @@
 'use strict';
 //Import error handler
-let errorHandler = require('../../Utils/errorHandler.js');
+const errorHandler = require('../../Utils/errorHandler.js');
 //Import AES library
-let AES = require('simple-encryption').AES;
+const AES = require('simple-encryption').AES;
 
 //Schema imports
-let Worker = require('../MongoSchemas/Worker.js');
-let WorkGroup = require('../MongoSchemas/WorkGroup.js');
+const Worker = require('../MongoSchemas/Worker.js');
+const WorkGroup = require('../MongoSchemas/WorkGroup.js');
 
 //Export the request handler
 module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
   groupMax) {
   //Get encryption information
-  let payload = message.payload;
-  let tag = message.tag;
-  let iv = message.iv;
+  const payload = message.payload;
+  const tag = message.tag;
+  const iv = message.iv;
   //Declare decrypted letiable for try/catch
   let decrypted;
   //Try decrypting, otherwise pass error onto user
@@ -110,7 +110,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
                     return;
                   }
                   //Create and populate the new group
-                  let newworkgroup = new WorkGroup();
+                  const newworkgroup = new WorkGroup();
                   newworkgroup.workers = [userID];
                   newworkgroup.data = [];
                   newworkgroup.work = JSON.stringify(work);
@@ -126,7 +126,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
                       work: work
                     };
                     //Generate IV
-                    let iv = AES.generateIV();
+                    const iv = AES.generateIV();
                     //Declare encrypted letiable for try/catch
                     let encrypted;
                     //Try to encrypt, forward errors
@@ -165,7 +165,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
                     work: JSON.parse(workgroup.work)
                   };
                   //Generate IV
-                  let iv = AES.generateIV();
+                  const iv = AES.generateIV();
                   //Declare encrypted letiable for try/catch block
                   let encrypted;
                   //Attempt to encrypt, pass errors to user

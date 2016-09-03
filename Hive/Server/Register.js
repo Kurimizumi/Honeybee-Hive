@@ -1,16 +1,16 @@
 'use strict';
 //Import forge
-let forge = require('node-forge');
+const forge = require('node-forge');
 //AES helper
-let AES = require('simple-encryption').AES;
+const AES = require('simple-encryption').AES;
 //Error handler
-let errorHandler = require('../../Utils/errorHandler.js');
+const errorHandler = require('../../Utils/errorHandler.js');
 //Import worker schema in order to register the new worker
-let Worker = require('../MongoSchemas/Worker.js');
+const Worker = require('../MongoSchemas/Worker.js');
 //Export single function for registration
 module.exports = function(message, mongoose, socket, eventEmitter, key) {
   //Create new worker
-  let newWorker = new Worker();
+  const newWorker = new Worker();
   //Create a keypair
   newWorker.generateRSAKeyPair(function(keyPair) {
     //If an error occured when generating the key, tell the user that an error
@@ -22,7 +22,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key) {
       return;
     }
     //Get the current date
-    let date = new Date();
+    const date = new Date();
     //Export the public key
     newWorker.publicKey = forge.pki.publicKeyToPem(keyPair.publicKey);
     //Set the last active date to the current date
@@ -43,7 +43,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key) {
         privateKey: forge.pki.privateKeyToPem(keyPair.privateKey)
       };
       //Generate an IV
-      let iv = AES.generateIV();
+      const iv = AES.generateIV();
       //Declare message for try/catch
       let message;
       //Encrypt the message, passing errors to user

@@ -1,9 +1,9 @@
 'use strict';
 //Import events
-let events = require('events');
+const events = require('events');
 
 //Create EventHandler function
-let EventHandler = function() {
+const EventHandler = function() {
   //Call the EventEmitter constructor on this object
   events.EventEmitter.call(this);
   //Create the registered event

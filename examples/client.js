@@ -9,10 +9,10 @@ const PORT = 54321;
 const ADDRESS = 'localhost';
 
 //Import key from filesystem
-let key = fs.readFileSync('public.pem', 'utf8');
+const key = fs.readFileSync('public.pem', 'utf8');
 
 //Define settings object
-let settings = {
+const settings = {
   connection: {
     hostname: 'localhost',
     port: 54321
@@ -26,14 +26,14 @@ let settings = {
 //Create the client, connecting to the server with settings object
 honeybeeHive.Honeybee(settings, function(eventHandler) {
   //Define our submission handler, to handle what happens once we submit work
-  let submitHandler = function(success) {
+  const submitHandler = function(success) {
     //Tell the client the status of our submission
     console.log('Submission ' + (success ? 'succeeded' : 'failed'));
     //Request more work, and pass it to the work handler
     eventHandler.request(workHandler);
   };
   //Define our work handler, to handle what happens when we receive work
-  let workHandler = function(work) {
+  const workHandler = function(work) {
     //Define our piSection letiable, to store the part of pi we calculated
     let piSection = 0;
     //Define n for Leibniz's formula, and calculate current position in it
