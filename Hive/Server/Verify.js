@@ -1,23 +1,23 @@
 'use strict';
 //Import encryption functions
-let AES = require('simple-encryption').AES;
-let RSA = require('simple-encryption').RSA;
+const AES = require('simple-encryption').AES;
+const RSA = require('simple-encryption').RSA;
 //Import error handler
-let errorHandler = require('../../Utils/errorHandler.js');
+const errorHandler = require('../../Utils/errorHandler.js');
 //Import forge
-let forge = require('node-forge');
+const forge = require('node-forge');
 
 //Mongoose schemas
-let Worker = require('../MongoSchemas/Worker.js');
+const Worker = require('../MongoSchemas/Worker.js');
 
 module.exports = function(message, mongoose, socket, eventEmitter, key,
   callback) {
   //Supposed user ID
-  let id = message.id;
+  const id = message.id;
   //Get encryption information
-  let payload = message.payload;
-  let iv = message.iv;
-  let tag = message.tag;
+  const payload = message.payload;
+  const iv = message.iv;
+  const tag = message.tag;
   //Define encrypted letiable for try/catch
   let decrypted;
   //Catch any errors during decryption
@@ -37,9 +37,9 @@ module.exports = function(message, mongoose, socket, eventEmitter, key,
     return;
   }
   //Signed payload
-  let verify = decrypted.verify;
+  const verify = decrypted.verify;
   //hash
-  let md = decrypted.md;
+  const md = decrypted.md;
   //Make sure that the required letiables were actually sent
   if(!id || !verify || !md) {
     errorHandler.sendError(socket, 'GENERIC_PARAMETERS_MISSING', true);
@@ -59,7 +59,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key,
       return;
     }
     //Get the public key for the worker
-    let publicKey = worker.publicKey;
+    const publicKey = worker.publicKey;
     //Declare verified letiable for try/catch
     let verified;
     //Verify that the worker is who they say they are. If verification fails
@@ -72,7 +72,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key,
       return;
     }
     //Generate IV for encryption
-    let newIV = AES.generateIV();
+    const newIV = AES.generateIV();
     //Create message for encryption
     let jsonmsg = {
       'verified': verified

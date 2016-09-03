@@ -1,9 +1,9 @@
 'use strict';
 //Import mongoose
-let mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
 //Setup schema
-let dataChunkSchema = mongoose.Schema({
+const dataChunkSchema = mongoose.Schema({
   //data of the DataChunk
   data: String
 });
