@@ -1,14 +1,14 @@
 //Require the encryption modules
-var RSA = require('simple-encryption').RSA;
-var AES = require('simple-encryption').AES;
+const RSA = require('simple-encryption').RSA;
+const AES = require('simple-encryption').AES;
 //Error handler
-var Error = require('../Utils/errorHandler.js');
+const error = require('../Utils/errorHandler.js');
 //Export main function
 module.exports = function(socket, serverPublicKey, callback) {
   //Generate a session key
-  var sessionKey = AES.generateKey();
+  const sessionKey = AES.generateKey();
   //Encrypt it with the serverPublicKey
-  var encrypted;
+  let encrypted;
   //Attempt to encrypt, otherwise error to user
   try {
     encrypted = RSA.encrypt(serverPublicKey, JSON.stringify({key: sessionKey}));
@@ -18,16 +18,16 @@ module.exports = function(socket, serverPublicKey, callback) {
   }
   //Listen only once
   socket.once('message', function(message) {
-    if(Error.findError(message.error)) {
+    if(error.findError(message.error)) {
       //Error has occured
-      console.log('Error: ' + Error.findError(message.error));
+      console.log('Error: ' + error.findError(message.error));
       return;
     }
-    var payload = message.payload;
-    var tag = message.tag;
-    var iv = message.iv;
+    const payload = message.payload;
+    const tag = message.tag;
+    const iv = message.iv;
     //Try to decrypt
-    var decrypted;
+    let decrypted;
     try {
       decrypted = JSON.parse(AES.decrypt(sessionKey, iv, tag, payload));
     } catch(e) {
