@@ -1,5 +1,7 @@
 # Honeybee-Hive
-[![CircleCI][circleci-image]][circleci-link]
+Master: [![CircleCI][circleci-image]][circleci-link]
+Dev: [![CircleCI][circleci-dev-image]][circleci-dev-link]
+
 [![NPM Version][version-image]][npm-link]
 [![NPM Download][download-image]][npm-link]
 
@@ -213,8 +215,10 @@ eventHandler.request(workHandler);
 [ISC][license-link]
 
 [license-link]: https://github.com/Kurimizumi/Honeybee-Hive/blob/master/LICENSE.md
-[circleci-image]: https://circleci.com/gh/Kurimizumi/Honeybee-Hive.svg?&style=shield
-[circleci-link]: https://circleci.com/gh/Kurimizumi/Honeybee-Hive
+[circleci-image]: https://circleci.com/gh/Kurimizumi/Honeybee-Hive/tree/master.svg?&style=shield
+[circleci-link]: https://circleci.com/gh/Kurimizumi/Honeybee-Hive/tree/master
+[circleci-dev-image]: https://circleci.com/gh/Kurimizumi/Honeybee-Hive/tree/dev.svg?style=shield
+[circleci-dev-link]: https://circleci.com/gh/Kurimizumi/Honeybee-Hive/tree/dev
 [npm-link]: https://npmjs.org/package/honeybee-hive
 [version-image]: https://img.shields.io/npm/v/honeybee-hive.svg
 [download-image]: https://img.shields.io/npm/dm/honeybee-hive.svg
