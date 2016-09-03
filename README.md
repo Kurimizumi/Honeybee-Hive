@@ -1,9 +1,10 @@
 # Honeybee-Hive
-[![Gitter][gitter-image]][gitter-link]
 Master [![CircleCI][circleci-image]][circleci-link]
 Dev [![CircleCI][circleci-dev-image]][circleci-dev-link]
 [![NPM Version][version-image]][npm-link]
 [![NPM Download][download-image]][npm-link]
+
+[![Gitter][gitter-image]][gitter-link]
 
 A node module to allow for volunteer computing, like BOINC.
 
