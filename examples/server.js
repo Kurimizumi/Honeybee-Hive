@@ -1,9 +1,11 @@
+'use strict';
+
 //Calculate pi using the Leibniz formula
 //Import the index file (usually honeybee-hive)
-var HoneybeeHive = require('../index.js');
+let HoneybeeHive = require('../index.js');
 //Import the fs module in order to import the key
-var fs = require('fs');
-//Define various setting constants
+let fs = require('fs');
+//Define letious setting constants
 const PORT = 54321; //Listening port
 const WORK_TIMEOUT = 60000; //Timeout until a client is assumed to not be
                             //completing the work
@@ -13,17 +15,17 @@ const GROUP_MAX = 1;  //Amount of clients required to submit data for the work
                       //to be classed as completed
 const FINISH_COUNT = 100; //Amount of jobs to schedule
 //Define counter for amount of work pieces created
-var workCounter = 0;
+let workCounter = 0;
 //Define counter for how many times work has been verified
-var completeCounter = 0;
+let completeCounter = 0;
 
 //Read the PEM encoded private key from the file system
-var serverPrivateKey = fs.readFileSync('private.pem', 'utf8');
-//Define pi variable to store pi for later
-var pi = 0;
+let serverPrivateKey = fs.readFileSync('private.pem', 'utf8');
+//Define pi letiable to store pi for later
+let pi = 0;
 
 //Define server settings
-var settings = {
+let settings = {
   connection: {
     port: PORT
   },
@@ -41,11 +43,11 @@ var settings = {
     disableRegistration: false
   },
   database: {
-    databaseName: 'myProjectName'
+    databaseName: 'hiveproj'
   }
 };
 //Start the server
-var eventEmitter = HoneybeeHive.Hive(settings);
+let eventEmitter = HoneybeeHive.Hive(settings);
 //Tell the user that the server has been started
 console.log('Server started');
 //Listen for create work events
@@ -75,7 +77,7 @@ eventEmitter.on('workgroup_complete', function(array, callback) {
   //You can do your own validation here e.g. have a majority consensus or verify
   //the output of each one yourself, looking for valid data (useful for things
   //similar to cryptocurrency mining)
-  for(var i = 0; i < array.length - 1; i++) {
+  for(let i = 0; i < array.length - 1; i++) {
     //We now have the individual work submitted by the clients
     //If the current value is not equal
     if(array[i] !== array[i+1]) {
@@ -101,8 +103,8 @@ eventEmitter.on('new_datachunk', function(datachunk) {
 
 
 /*
-var Pi=0;
-var n=1;
+let Pi=0;
+let n=1;
 for (i=0;i<=1000000000000;i++)
 {
 Pi=Pi+(4/n)-(4/(n+2))

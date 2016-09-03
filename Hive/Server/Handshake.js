@@ -1,34 +1,35 @@
+'use strict';
 //Import forge for encryption
-var forge = require('node-forge');
+let forge = require('node-forge');
 //Import our error handling module
-var Error = require('../../Utils/Error.js');
+let errorHandler = require('../../Utils/errorHandler.js');
 //Import our encryption modules
-var RSA = require('simple-encryption').RSA;
-var AES = require('simple-encryption').AES;
+let RSA = require('simple-encryption').RSA;
+let AES = require('simple-encryption').AES;
 //Should return an AES key
 module.exports = function(message, socket, eventEmitter, key) {
   //If the encrypted payload is not present, fail
   if(message.payload == null) {
     //Send an error, and disconnect
-    Error.sendError(socket, 'GENERIC_PAYLOAD_MISSING', true);
+    errorHandler.sendError(socket, 'GENERIC_PAYLOAD_MISSING', true);
     //Return to prevent further execution
     return;
   }
-  //Declare decrypted variable for try/catch
-  var decrypted;
+  //Declare decrypted letiable for try/catch
+  let decrypted;
   //Attempt to decrypt the payload
   try {
     decrypted = JSON.parse(RSA.decrypt(key, message.payload));
   } catch(e) {
     //If an error was thrown stop
-    Error.sendError(socket, 'SECURITY_DECRYPTION_FAILURE', true);
+    errorHandler.sendError(socket, 'SECURITY_DECRYPTION_FAILURE', true);
     //Return to prevent further execution
     return;
   }
   //Check if key exists in JSON
   if(decrypted.key == null) {
     //Tell user that the key wasn't found
-    Error.sendError(socket, 'STAGE_HANDSHAKE_KEY_MISSING', true);
+    errorHandler.sendError(socket, 'STAGE_HANDSHAKE_KEY_MISSING', true);
     //Return to prevent further execution
     return;
   }
@@ -37,18 +38,18 @@ module.exports = function(message, socket, eventEmitter, key) {
     forge.util.decode64(decrypted.key).length !== 32
   ) {
     //Not a string or not 256 bits, so fail
-    Error.sendError(socket, 'SECURITY_INVALID_KEY', true);
+    errorHandler.sendError(socket, 'SECURITY_INVALID_KEY', true);
     //Return to prevent further execution
     return;
   }
   //Generate a 12 byte IV for AES-GCM
-  var iv = AES.generateIV();
-  //Declare encrypted variable for try/catch
-  var encrypted;
+  let iv = AES.generateIV();
+  //Declare encrypted letiable for try/catch
+  let encrypted;
   try {
     encrypted = AES.encrypt(decrypted.key, iv, JSON.stringify('success'));
   } catch(e) {
-    Error.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
+    errorHandler.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
     //Stop execution
     return;
   }

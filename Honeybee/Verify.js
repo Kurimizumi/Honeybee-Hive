@@ -1,28 +1,29 @@
+'use strict';
 //Import encryption utils
-var RSA = require('simple-encryption').RSA;
-var AES = require('simple-encryption').AES;
+let RSA = require('simple-encryption').RSA;
+let AES = require('simple-encryption').AES;
 //Error handler
-var Error = require('../Utils/Error.js');
+let errorHandler = require('../Utils/errorHandler.js');
 //handshake
-var handshake = require('./Handshake.js');
+let handshake = require('./Handshake.js');
 //Export main function
 module.exports = function(socket, eventHandler, serverPublicKey,
   clientPrivateKey, clientID, callback) {
     handshake(socket, serverPublicKey, function(sessionKey) {
     //Once handshake has been completed, listen to verification messages
     socket.once('message', function(message) {
-      if(Error.findError(message.error)) {
+      if(errorHandler.findError(message.error)) {
         //An error has occured
-        console.log('Error: ' + Error.findError(message.error));
+        console.log('Error: ' + errorHandler.findError(message.error));
         return;
       }
       //Encryption information
-      var payload = message.payload;
-      var tag = message.tag;
-      var iv = message.iv;
+      let payload = message.payload;
+      let tag = message.tag;
+      let iv = message.iv;
 
       //Try to decrypt
-      var decrypted;
+      let decrypted;
       try {
         decrypted = JSON.parse(AES.decrypt(sessionKey, iv, tag, payload));
       } catch(e) {
@@ -38,10 +39,10 @@ module.exports = function(socket, eventHandler, serverPublicKey,
       callback(decrypted.verified, sessionKey);
     });
     //Prepare verification section
-    var signed, md;
+    let signed, md;
     //Try to sign message
     try {
-      var out = RSA.sign(clientPrivateKey, 'verify');
+      let out = RSA.sign(clientPrivateKey, 'verify');
       signed = out.signed;
       md = out.md;
     } catch(e) {
@@ -49,14 +50,14 @@ module.exports = function(socket, eventHandler, serverPublicKey,
       return;
     }
     //Prepare json message for aes encryption
-    var jsonmsg = {
+    let jsonmsg = {
       verify: signed,
       md: md
     };
     //Generate IV
-    var iv = AES.generateIV();
+    let iv = AES.generateIV();
     //Try to encrypt
-    var encrypted;
+    let encrypted;
     try {
       encrypted = AES.encrypt(sessionKey, iv, JSON.stringify(jsonmsg));
     } catch(e) {

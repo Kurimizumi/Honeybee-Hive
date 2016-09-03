@@ -31,15 +31,15 @@ See [examples](https://github.com/Kurimizumi/Honeybee-Hive/tree/master/examples)
 #### Start function
 The server gets called like this:
 ```javascript
-var HoneybeeHive = require('honeybee-hive');
-var eventEmitter = HoneybeeHive.Hive(settings);
+let HoneybeeHive = require('honeybee-hive');
+let eventEmitter = HoneybeeHive.Hive(settings);
 ```
 
 The settings object is described below
 
 #### Settings
 ```javascript
-var settings = {
+let settings = {
   connection: {
     port: 54321 //Listening port, defaults to 54321
   },
@@ -93,7 +93,7 @@ When a set of work is complete, we must verify it. We can do so like this:
 ```javascript
 eventEmitter.on('workgroup_complete', function(array, callback) {
   //Make sure that all the values of the array are equal
-  for(var i = 0; i < array.length - 1; i++) {
+  for(let i = 0; i < array.length - 1; i++) {
     //If they aren't equal
     if(array[i] !== array[i+1]) {
       //Then return null to the callback
@@ -110,7 +110,7 @@ eventEmitter.on('workgroup_complete', function(array, callback) {
 ###### Datachunk creation
 When a workgroup is validated, we can then bring it together with other validated workgroups, or datachunks, like this:
 ```javascript
-var total = 0;
+let total = 0;
 eventEmitter.on('new_datachunk', function(datachunk) {
   //datachunk is the data that we submitted to the callback for workgroup_complete
   //We access the count property and add it to the total, and then log it to the console
@@ -129,8 +129,8 @@ Remember that if order matters, then you'll need to submit an order with the wor
 #### Start function
 The client gets called like this:
 ```javascript
-var HoneybeeHive = require('honeybee-hive');
-var eventHandler;
+let HoneybeeHive = require('honeybee-hive');
+let eventHandler;
 HoneybeeHive.Honeybee(settings, function(evtHandler) {
   //Set eventHandler to evtHandler
   eventHandler = evtHandler;
@@ -146,7 +146,7 @@ The settings object is described below
 
 #### Settings
 ```javascript
-var settings = {
+let settings = {
   connection: {
     hostname: 'localhost', //The hostname the server is listening on, defaults to localhost
     port: 54321 //Listening port, defaults to 54321

@@ -1,7 +1,8 @@
+'use strict';
 //Import mongoose, the display manager
-var mongoose = require('mongoose');
+let mongoose = require('mongoose');
 //Create a worker schema for storing clients
-var workGroupSchema = mongoose.Schema({
+let workGroupSchema = mongoose.Schema({
   //Array of objects containing data from each client
   data: [{
     worker: String, //Worker ID

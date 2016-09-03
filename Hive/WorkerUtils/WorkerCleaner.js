@@ -1,10 +1,11 @@
+'use strict';
 //Require Worker and WorkGroup
-var Worker = require('../MongoSchemas/Worker.js');
-var WorkGroup = require('../MongoSchemas/WorkGroup');
+let Worker = require('../MongoSchemas/Worker.js');
+let WorkGroup = require('../MongoSchemas/WorkGroup');
 //Export main function
-module.exports = function(mongoose, workTimeout, checkInterval) {
+module.exports = function(mongoose, settings) {
   //If workTimeout is less than or equal to 0, do not use a timeout
-  if(workTimeout <= 0) {
+  if(settings.timeouts.workTimeout <= 0) {
     return;
   }
   //Every workTimeout milliseconds, call the function
@@ -13,7 +14,7 @@ module.exports = function(mongoose, workTimeout, checkInterval) {
     //seconds ago
     Worker.find({
       lastActive: {
-        $lte: new Date() - workTimeout
+        $lte: new Date() - settings.timeouts.workTimeout
       }
     },function(error, workers) {
       //If the database returned an error
@@ -26,14 +27,16 @@ module.exports = function(mongoose, workTimeout, checkInterval) {
       }
       //Define functions for use within loops
       //Function for database errors in order to tell the user
-      var saveWorkGroup = function(error) {
+      let saveWorkGroup = function(error) {
         //If error, tell the user
         if(error) {
           console.log('Error: DATABASE_GENERIC');
         }
       };
+      //Define i for later
+      let i = 0;
       //Function for searching workgroups
-      var searchWorkGroup = function(error, workgroups) {
+      let searchWorkGroup = function(error, workgroups) {
         //Check for errors, if so don't continue
         if(error) {
           //Log to the console
@@ -41,7 +44,7 @@ module.exports = function(mongoose, workTimeout, checkInterval) {
           return;
         }
         //Loop through the workgroups, removing the worker
-        for(var j = 0; j < workgroups.length; j++) {
+        for(let j = 0; j < workgroups.length; j++) {
           //Remove the worker from the workgroup
           workgroups[j].workers.splice(
             workgroups[j].workers.indexOf(workers[i]), 1
@@ -50,7 +53,7 @@ module.exports = function(mongoose, workTimeout, checkInterval) {
         }
       };
       //Loop through all the workers
-      for(var i = 0; i < workers.length; i++) {
+      for(i = 0; i < workers.length; i++) {
         //Find workgroups which the worker hasn't submitted data for
         WorkGroup.find({
           //All conditions should be true
@@ -76,5 +79,5 @@ module.exports = function(mongoose, workTimeout, checkInterval) {
         }, searchWorkGroup);
       }
     });
-  }, checkInterval);
+  }, settings.timeouts.checkInterval);
 };

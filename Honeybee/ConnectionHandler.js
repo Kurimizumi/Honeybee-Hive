@@ -1,21 +1,22 @@
+'use strict';
 //Require net for JsonSocket
-var net = require('net');
+let net = require('net');
 //Require json-socket
-var JsonSocket = require('json-socket');
+let JsonSocket = require('json-socket');
 //Require node-persist
-var storage = require('node-persist');
+let storage = require('node-persist');
 
 //Sections
-var register = require('./Register.js');
-var request = require('./Request.js');
-var submit = require('./Submit.js');
+let register = require('./Register.js');
+let request = require('./Request.js');
+let submit = require('./Submit.js');
 
-var main = function(address, port, serverPublicKey, eventHandler,
+let main = function(address, port, serverPublicKey, eventHandler,
   clientPrivateKey, clientID) {
   //Register for alerts
   eventHandler.on('request', function(callback) {
     //Create socket
-    var socket = new JsonSocket(new net.Socket());
+    let socket = new JsonSocket(new net.Socket());
     //Connect to server
     socket.connect(port, address);
     //Wait until we are connected
@@ -26,7 +27,7 @@ var main = function(address, port, serverPublicKey, eventHandler,
   });
   eventHandler.on('submit', function(data, callback) {
     //Create socket
-    var socket = new JsonSocket(new net.Socket());
+    let socket = new JsonSocket(new net.Socket());
     //Connect to server
     socket.connect(port, address);
     //Wait until we are connected
@@ -39,31 +40,31 @@ var main = function(address, port, serverPublicKey, eventHandler,
   eventHandler.registered();
 };
 //Export the main function
-module.exports = function(address, port, serverPublicKey, eventHandler) {
+module.exports = function(eventHandler, settings) {
   //Load the storage
   storage.initSync();
   //Load private key
-  var clientPrivateKey = storage.getItem('key');
+  let clientPrivateKey = storage.getItem('key');
   //If not registered
   if(clientPrivateKey == null) {
     //Create socket
-    var socket = new JsonSocket(new net.Socket());
+    let socket = new JsonSocket(new net.Socket());
     //Connect to server
-    socket.connect(port, address);
+    socket.connect(settings.connection.port, settings.connection.hostname);
     //Wait for connection
     socket.on('connect', function() {
       //Call register function
-      register(socket, eventHandler, storage, serverPublicKey,
+      register(socket, eventHandler, storage, settings.encryption.key,
         function(clientPrivateKey, clientID) {
         //Once finished, get the private key and clientID call the main function
-        main(address, port, serverPublicKey, eventHandler, clientPrivateKey,
-          clientID);
+        main(settings.connection.hostname, settings.connection.port,
+          settings.encryption.key, eventHandler, clientPrivateKey, clientID);
       });
     });
     //Stop execution (main is called once connected)
     return;
   }
-  var clientID = storage.getItem('id');
-  main(address, port, serverPublicKey, eventHandler, clientPrivateKey,
-    clientID);
+  let clientID = storage.getItem('id');
+  main(settings.connection.hostname, settings.connection.port,
+    settings.encryption.key, eventHandler, clientPrivateKey, clientID);
 };

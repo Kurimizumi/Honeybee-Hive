@@ -1,33 +1,35 @@
+'use strict';
 //Import error handler
-var Error = require('../../Utils/Error.js');
+let errorHandler = require('../../Utils/errorHandler.js');
 //Import AES library
-var AES = require('simple-encryption').AES;
+let AES = require('simple-encryption').AES;
 
 //Schema imports
-var Worker = require('../MongoSchemas/Worker.js');
-var WorkGroup = require('../MongoSchemas/WorkGroup.js');
+let Worker = require('../MongoSchemas/Worker.js');
+let WorkGroup = require('../MongoSchemas/WorkGroup.js');
 
 //Export the request handler
 module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
   groupMax) {
   //Get encryption information
-  var payload = message.payload;
-  var tag = message.tag;
-  var iv = message.iv;
-  //Declare decrypted variable for try/catch
-  var decrypted;
+  let payload = message.payload;
+  let tag = message.tag;
+  let iv = message.iv;
+  //Declare decrypted letiable for try/catch
+  let decrypted;
   //Try decrypting, otherwise pass error onto user
   try {
     decrypted = JSON.parse(AES.decrypt(key, iv, tag, payload));
   } catch(e) {
-    Error.sendError(socket, 'SECURITY_DECRYPTION_FAILURE', true);
+    errorHandler.sendError(socket, 'SECURITY_DECRYPTION_FAILURE', true);
     return;
   }
   if(decrypted == null ||
     decrypted.request == null ||
     decrypted.request.toUpperCase() !== 'REQUEST') {
       //Stop execution, we cannot verify the user...
-      Error.sendError(socket, 'STAGE_HANDSHAKE_POST_COMPLETE_FAILURE', true);
+      errorHandler.sendError(socket, 'STAGE_HANDSHAKE_POST_COMPLETE_FAILURE',
+        true);
       return;
   }
   //Make sure that the user does not currently have a work group that they have
@@ -55,7 +57,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
   }, function(error, workgroups) {
     //Pass database errors onto client
     if(error) {
-      Error.sendError(socket, 'DATABASE_GENERIC', true);
+      errorHandler.sendError(socket, 'DATABASE_GENERIC', true);
       //Stop execution
       return;
     }
@@ -65,7 +67,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
       Worker.findOne({_id: userID}, function(error, worker) {
         //If error, tell the user and stop executing
         if(error) {
-          Error.sendError(socket, 'DATABASE_GENERIC', true);
+          errorHandler.sendError(socket, 'DATABASE_GENERIC', true);
           //Stop execution
           return;
         }
@@ -74,7 +76,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
         worker.save(function(error) {
           //If error, tell the user and stop executing
           if(error) {
-            Error.sendError(socket, 'DATABASE_GENERIC', true);
+            errorHandler.sendError(socket, 'DATABASE_GENERIC', true);
             return;
           }
           //Find non full work groups
@@ -91,7 +93,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
             function(error, workgroup) {
               //Pass database errors onto the client
               if(error) {
-                Error.sendError(socket, 'DATABASE_GENERIC', true);
+                errorHandler.sendError(socket, 'DATABASE_GENERIC', true);
                 //Stop execution
                 return;
               }
@@ -102,36 +104,37 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
                 eventEmitter.emit('create_work', function(work) {
                   //If there's no work left
                   if(work == null) {
-                    Error.sendError(socket, 'STAGE_REQUEST_NO_WORK', true);
+                    errorHandler.sendError(socket, 'STAGE_REQUEST_NO_WORK',
+                      true);
                     //Stop execution
                     return;
                   }
                   //Create and populate the new group
-                  var newworkgroup = new WorkGroup();
+                  let newworkgroup = new WorkGroup();
                   newworkgroup.workers = [userID];
                   newworkgroup.data = [];
                   newworkgroup.work = JSON.stringify(work);
                   newworkgroup.save(function(error) {
                     //If database error, pass it onto the user
                     if(error) {
-                      Error.sendError(socket, 'DATABASE_GENERIC', true);
+                      errorHandler.sendError(socket, 'DATABASE_GENERIC', true);
                       //Stop execution
                       return;
                     }
                     //Prepare message for encryption
-                    var jsonmsg = {
+                    let jsonmsg = {
                       work: work
                     };
                     //Generate IV
-                    var iv = AES.generateIV();
-                    //Declare encrypted variable for try/catch
-                    var encrypted;
+                    let iv = AES.generateIV();
+                    //Declare encrypted letiable for try/catch
+                    let encrypted;
                     //Try to encrypt, forward errors
                     try {
                       encrypted = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
                     } catch(e) {
-                      Error.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE',
-                        true);
+                      errorHandler.sendError(socket,
+                        'SECURITY_ENCRYPTION_FAILURE', true);
                       //Stop execution
                       return;
                     }
@@ -153,24 +156,24 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
                 workgroup.save(function(error) {
                   //Pass database errors to user
                   if(error) {
-                    Error.sendError(socket, 'DATABASE_GENERIC', true);
+                    errorHandler.sendError(socket, 'DATABASE_GENERIC', true);
                     //stop execution
                     return;
                   }
                   //Prepare message for encryption
-                  var jsonmsg = {
+                  let jsonmsg = {
                     work: JSON.parse(workgroup.work)
                   };
                   //Generate IV
-                  var iv = AES.generateIV();
-                  //Declare encrypted variable for try/catch block
-                  var encrypted;
+                  let iv = AES.generateIV();
+                  //Declare encrypted letiable for try/catch block
+                  let encrypted;
                   //Attempt to encrypt, pass errors to user
                   try {
                     encrypted = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
                   } catch(e) {
-                    Error.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE',
-                      true);
+                    errorHandler.sendError(socket,
+                      'SECURITY_ENCRYPTION_FAILURE', true);
                     //Stop execution
                     return;
                   }
@@ -190,7 +193,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
       });
     } else {
       //Pending work
-      Error.sendError(socket, 'STAGE_REQUEST_PENDING_WORK', true);
+      errorHandler.sendError(socket, 'STAGE_REQUEST_PENDING_WORK', true);
       //Stop execution/return for consistency
       return;
     }

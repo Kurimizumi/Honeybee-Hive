@@ -1,9 +1,10 @@
+'use strict';
 //Import mongoose, the display manager
-var mongoose = require('mongoose');
+let mongoose = require('mongoose');
 //Import forge library for key generation
-var forge = require('node-forge');
+let forge = require('node-forge');
 //Create a worker schema for storing clients
-var workerSchema = mongoose.Schema({
+let workerSchema = mongoose.Schema({
   //For verification
   publicKey: String,
   //Get registration date (future functionality)

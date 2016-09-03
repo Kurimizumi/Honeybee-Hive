@@ -1,3 +1,4 @@
+'use strict';
 /*
 1. Check the user is a worker for this group
 2. Check the user hasn't already submitted work for it
@@ -13,42 +14,43 @@
 */
 
 //Import error handler
-var Error = require('../../Utils/Error.js');
+let errorHandler = require('../../Utils/errorHandler.js');
 //Import AES for encryption
-var AES = require('simple-encryption').AES;
+let AES = require('simple-encryption').AES;
 
 //Mongo schemas
-var WorkGroup = require('../MongoSchemas/WorkGroup.js');
-var DataChunk = require('../MongoSchemas/DataChunk.js');
+let WorkGroup = require('../MongoSchemas/WorkGroup.js');
+let DataChunk = require('../MongoSchemas/DataChunk.js');
 
 //Export main submit function
 module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
   groupMax) {
   //Get encryption information
-  var payload = message.payload;
-  var tag = message.tag;
-  var iv = message.iv;
-  //Declare decrypted variable for decryption attempt
-  var decrypted;
+  let payload = message.payload;
+  let tag = message.tag;
+  let iv = message.iv;
+  //Declare decrypted letiable for decryption attempt
+  let decrypted;
   //Try to decrypt, pass errors onto user
   try {
     decrypted = JSON.parse(AES.decrypt(key, iv, tag, payload));
   } catch(e) {
-    Error.sendError(socket, 'SECURITY_DECRYPTION_FAILURE', true);
+    errorHandler.sendError(socket, 'SECURITY_DECRYPTION_FAILURE', true);
     //Stop execution
     return;
   }
   //Check that the user is verified still, if not disconnect them
   if(decrypted == null) {
-    Error.sendError(socket, 'STAGE_HANDSHAKE_POST_COMPLETE_FAILURE', true);
+    errorHandler.sendError(socket, 'STAGE_HANDSHAKE_POST_COMPLETE_FAILURE',
+      true);
     //Stop execution
     return;
   }
   //Store decrypted json in required locations
-  var data = decrypted.data;
+  let data = decrypted.data;
   //If no data was sent, error
   if(data == null) {
-    Error.sendError(socket, 'STAGE_SUBMIT_NO_DATA', true);
+    errorHandler.sendError(socket, 'STAGE_SUBMIT_NO_DATA', true);
     //Stop execution
     return;
   }
@@ -64,13 +66,13 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
     }, function(error, workgroup) {
       //If an error occured, pass it to the user and disconnect
       if(error) {
-        Error.sendError(socket, 'DATABASE_GENERIC', true);
+        errorHandler.sendError(socket, 'DATABASE_GENERIC', true);
         //Stop execution
         return;
       }
       //If no work group was found, error to the user
       if(workgroup == null) {
-        Error.sendError(socket, 'DATABASE_NOT_FOUND', true);
+        errorHandler.sendError(socket, 'DATABASE_NOT_FOUND', true);
         //Stop execution
         return;
       }
@@ -83,24 +85,24 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
       workgroup.save(function(error) {
         //If error, pass to user
         if(error) {
-          Error.sendError(socket, 'DATABASE_GENERIC', true);
+          errorHandler.sendError(socket, 'DATABASE_GENERIC', true);
           //Stop execution
           return;
         }
         //Otherwise alert the user about the success
-        var jsonmsg = {
+        let jsonmsg = {
           success: true
         };
         //Generate an IV
-        var iv = AES.generateIV();
+        let iv = AES.generateIV();
         //Declare encrypted for try/catch
-        var encrypted;
+        let encrypted;
         //Try to encrypt
         try {
           encrypted = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
         } catch(e) {
           //Tell the user about the error and halt
-          Error.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
+          errorHandler.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
           //Stop execution
           return;
         }
@@ -115,9 +117,9 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
         //Check if the work group has finished
         if(workgroup.data.length === groupMax) {
           //Prepare array of data
-          var array = [];
+          let array = [];
           //Loop through entire data array
-          for(var i = 0; i < workgroup.data.length; i++) {
+          for(let i = 0; i < workgroup.data.length; i++) {
             //Strip entire array of data of worker ids, leaving only the data.
             //Also parse the data back into javascript from JSON
             array.push(JSON.parse(workgroup.data[i].data));
@@ -137,7 +139,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
               //Valid work, delete the workgroup and create a datachunk from the
               //output
               WorkGroup.remove({'_id': workgroup._id}, function(error) {
-                var newdatachunk = new DataChunk();
+                let newdatachunk = new DataChunk();
                 //Stringify the datachunk and store it
                 newdatachunk.data = JSON.stringify(datachunk);
                 //Save our new datachunk

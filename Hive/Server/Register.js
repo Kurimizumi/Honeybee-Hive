@@ -1,27 +1,28 @@
+'use strict';
 //Import forge
-var forge = require('node-forge');
+let forge = require('node-forge');
 //AES helper
-var AES = require('simple-encryption').AES;
+let AES = require('simple-encryption').AES;
 //Error handler
-var Error = require('../../Utils/Error.js');
+let errorHandler = require('../../Utils/errorHandler.js');
 //Import worker schema in order to register the new worker
-var Worker = require('../MongoSchemas/Worker.js');
+let Worker = require('../MongoSchemas/Worker.js');
 //Export single function for registration
 module.exports = function(message, mongoose, socket, eventEmitter, key) {
   //Create new worker
-  var newWorker = new Worker();
+  let newWorker = new Worker();
   //Create a keypair
   newWorker.generateRSAKeyPair(function(keyPair) {
     //If an error occured when generating the key, tell the user that an error
     //occured
     if(keyPair == null) {
       //Stop on error
-      Error.sendError(socket, 'SECURITY_KEY_GENERATION_FAILURE', true);
+      errorHandler.sendError(socket, 'SECURITY_KEY_GENERATION_FAILURE', true);
       //Return to stop further execution
       return;
     }
     //Get the current date
-    var date = new Date();
+    let date = new Date();
     //Export the public key
     newWorker.publicKey = forge.pki.publicKeyToPem(keyPair.publicKey);
     //Set the last active date to the current date
@@ -33,23 +34,23 @@ module.exports = function(message, mongoose, socket, eventEmitter, key) {
       //If saving throws an error, tell the user what the error was
       if(error) {
         //Error and disconnect from user
-        Error.sendError(socket, 'DATABASE_GENERIC', true);
+        errorHandler.sendError(socket, 'DATABASE_GENERIC', true);
         //Return to stop further execution
         return;
       }
       //Export key and form the message
-      var jsonmsg = {
+      let jsonmsg = {
         privateKey: forge.pki.privateKeyToPem(keyPair.privateKey)
       };
       //Generate an IV
-      var iv = AES.generateIV();
+      let iv = AES.generateIV();
       //Declare message for try/catch
-      var message;
+      let message;
       //Encrypt the message, passing errors to user
       try {
         message = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
       } catch(e) {
-        Error.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
+        errorHandler.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
         //Stop execution
         return;
       }

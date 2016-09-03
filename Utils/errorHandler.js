@@ -1,5 +1,6 @@
+'use strict';
 //List of errors
-var errors = [
+let errors = [
   //Unknown errors
   'UNKNOWN_ERROR', //ONLY FOR USE IF THE ERROR IS COMPLETELY UNKNOWN
   //Database errors
