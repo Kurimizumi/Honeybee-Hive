@@ -1,6 +1,4 @@
 # Honeybee-Hive
-
-[![Join the chat at https://gitter.im/Honeybee-Hive/Lobby](https://badges.gitter.im/Honeybee-Hive/Lobby.svg)](https://gitter.im/Honeybee-Hive/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![CircleCI][circleci-image]][circleci-link]
 [![NPM Version][version-image]][npm-link]
 [![NPM Download][download-image]][npm-link]
