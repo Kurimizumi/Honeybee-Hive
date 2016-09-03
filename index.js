@@ -79,7 +79,7 @@ const Hive = function(userSettings) {
     server.on('connection', function(socket) {
       //Wrap the socket in a JsonWebSocket
       socket = new JsonWebSocket(socket);
-      //Pass in the socket,
+      
     });
   }
   //Return the event emitter in order for the client to listen on it
