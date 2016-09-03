@@ -15,7 +15,7 @@ const GROUP_MAX = 1;  //Amount of clients required to submit data for the work
                       //to be classed as completed
 const FINISH_COUNT = 100; //Amount of jobs to schedule
 //Define counter for amount of work pieces created
-let workCounter = 1;
+let workCounter = 0;
 //Define counter for how many times work has been verified
 const completeCounter = 1;
 
