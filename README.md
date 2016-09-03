@@ -1,8 +1,11 @@
 # Honeybee-Hive
 Master [![CircleCI][circleci-image]][circleci-link]
 Dev [![CircleCI][circleci-dev-image]][circleci-dev-link]
+
 [![NPM Version][version-image]][npm-link]
 [![NPM Download][download-image]][npm-link]
+
+[![Gitter][gitter-image]][gitter-link]
 
 A node module to allow for volunteer computing, like BOINC.
 
@@ -214,6 +217,8 @@ eventHandler.request(workHandler);
 [ISC][license-link]
 
 [license-link]: https://github.com/Kurimizumi/Honeybee-Hive/blob/master/LICENSE.md
+[gitter-image]: https://img.shields.io/gitter/room/Kurimizumi/Honeybee-Hive.svg
+[gitter-link]: https://gitter.im/Honeybee-Hive/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge
 [circleci-image]: https://circleci.com/gh/Kurimizumi/Honeybee-Hive/tree/master.svg?&style=shield
 [circleci-link]: https://circleci.com/gh/Kurimizumi/Honeybee-Hive/tree/master
 [circleci-dev-image]: https://circleci.com/gh/Kurimizumi/Honeybee-Hive/tree/dev.svg?style=shield
