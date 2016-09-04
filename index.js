@@ -70,11 +70,11 @@ const hive = function(userSettings) {
   //If the websocket was desired, enable the server
   if(settings.websocket.enabled === true) {
     //Create a ws server
-    const server = ws.createServer();
+    const wsserver = ws.createServer();
     //Listen on the port defined above
-    server.listen(settings.websocket.port);
+    wsserver.listen(settings.websocket.port);
     //When we receive a connection, create a socket
-    server.on('connection', function(socket) {
+    wsserver.on('connection', function(socket) {
       //Wrap the socket in a JsonWebSocket
       socket = new JsonWebSocket(socket);
       //Pass in the socket
@@ -84,17 +84,22 @@ const hive = function(userSettings) {
     eventHandler.on('stop', function(callback) {
       //Stop the ws server gracefully. Callback is called once the server has
       //finished all current connections.
-      server.close();
+      server.close(function(error) {
+        wsserver.close(function() {
+          callback();
+        });
+      });
+    });
+  } else {
+    //Listen for stop events
+    eventHandler.on('stop', function(callback) {
+      //Stop the TCP server gracefully. Callback is called once the server has
+      //finished all current connections
+      server.close(function(error) {
+        callback();
+      });
     });
   }
-  //Listen for stop events
-  eventHandler.on('stop', function(callback) {
-    //Stop the TCP server gracefully. Callback is called once the server has
-    //finished all current connections
-    server.close(function(error) {
-      callback(error);
-    });
-  });
   //Return the event emitter in order for the client to listen on it
   return eventHandler;
 };

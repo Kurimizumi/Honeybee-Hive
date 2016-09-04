@@ -132,9 +132,8 @@ Remember that if order matters, then you'll need to submit an order with the wor
 ###### Stopping the server
 To stop the server you can do this:
 ```javascript
-eventHandler.stop(function(error) {
-  //error is an Error object if the server wasn't running in the first place
-  //called once all existing connections have finished
+eventHandler.stop(function() {
+  //Called once all existing connections have finished and the server is actually closed.
 });
 ```
 
