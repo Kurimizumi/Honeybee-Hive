@@ -64,8 +64,12 @@ let settings = {
   },
   database: {
     hostname: 'localhost', //Sets the hostname for the mongodb database. Default: localhost
-    port: '27017', //Sets the port for the mongodb databse. Default: none
+    port: '27017', //Optional. Sets the port for the mongodb databse. Default: none
     databaseName: 'hive' //The name for the mongodb database. You could set this to your project name. Default: hive
+  },
+  websocket: {
+    enabled: false, //Sets if we should also run a WebSocket server for WebSocket clients using Honeybee-Web. Default: false
+    port: 54322 //What  port we should run the WebSocket server on. Default: 54322
   }
 }
 ```
