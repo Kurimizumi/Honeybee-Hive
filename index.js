@@ -10,6 +10,12 @@ const defaults = require('deep-defaults');
 //HIVE IMPORTS
 //Import net for JsonSocket
 const net = require('net');
+//Import JsonSocket
+const JsonSocket = require('json-socket');
+//Import ws for JsonWebSocket
+const ws = require('nodejs-websocket');
+//Import JsonWebSocket
+const JsonWebSocket = require('json-websocket');
 //Hive connection handler
 const hiveConnectionHandler = require('./Hive/Server/ConnectionHandler.js');
 //Import the WorkerCleaner
@@ -56,12 +62,27 @@ const Hive = function(userSettings) {
   server.listen(settings.connection.port);
   //Start the WorkerCleaner
   workerCleaner(mongoose, settings);
-  //When we receive a connection, create a socket and pass it to the
-  //HiveConnectionHandler - normal TCP socket
+  //When we receive a connection, create a socket
   server.on('connection', function(socket) {
-    //Pass in the socket, the settings
+    //Wrap the socket in the JsonSocket
+    socket = new JsonSocket(socket);
+    //Pass in the information we need.
     hiveConnectionHandler(socket, mongoose, eventEmitter, settings);
   });
+  //If the websocket was desired, enable the server
+  if(settings.websocket.enabled === true) {
+    //Create a ws server
+    const server = ws.createServer();
+    //Listen on the port defined above
+    server.listen(settings.websocket.port);
+    //When we receive a connection, create a socket
+    server.on('connection', function(socket) {
+      //Wrap the socket in a JsonWebSocket
+      socket = new JsonWebSocket(socket);
+      //Pass in the socket
+      hiveConnectionHandler(socket, mongoose, eventEmitter, settings);
+    });
+  }
   //Return the event emitter in order for the client to listen on it
   return eventEmitter;
 };

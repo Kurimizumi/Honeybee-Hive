@@ -1,3 +1,4 @@
+'use strict';
 //Require the encryption modules
 const RSA = require('simple-encryption').RSA;
 const AES = require('simple-encryption').AES;

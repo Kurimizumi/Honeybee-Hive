@@ -1,6 +1,4 @@
 'use strict';
-//Import JsonSocket for easier JSON parsing with net
-const JsonSocket = require('json-socket');
 //Import specific message functions
 const register = require('./Register.js');
 const handshake = require('./Handshake.js');
@@ -16,8 +14,6 @@ const errorHandler = require('../../Utils/errorHandler.js');
 //Socket is the socket passed by index, eventEmitter is the Event
 //Listener/Emitter, and settings contains user settings
 module.exports = function(socket, mongoose, eventEmitter, settings) {
-  //Wrap the socket with JsonSocket
-  socket = new JsonSocket(socket);
   //Set an inactivity timeout of 30 seconds in order to prevent DOS attacks
   socket.setTimeout(settings.timeouts.connectionTimeout, function() {
     //Destroy the socket to prevent communications either way

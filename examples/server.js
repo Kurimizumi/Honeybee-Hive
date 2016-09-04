@@ -44,6 +44,9 @@ let settings = {
   },
   database: {
     databaseName: 'hiveproj'
+  },
+  websocket: {
+    enabled: true
   }
 };
 //Start the server
