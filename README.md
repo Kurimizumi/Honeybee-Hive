@@ -16,6 +16,7 @@ npm install honeybee-hive --save
 
 ## Notes
 * Alpha stages, expect breaking changes between versions currently
+* If you want to have clients from the browser, take a look at [Honeybee-Web](https://github.com/Kurimizumi/Honeybee-Web)
 
 ## Example setups
 ###Server
