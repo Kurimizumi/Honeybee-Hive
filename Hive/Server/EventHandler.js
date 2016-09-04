@@ -24,8 +24,8 @@ class EventHandler extends events.EventEmitter {
     this.emit('new_datachunk');
   }
   //Request to stop the server
-  stop () {
-    this.emit('stop');
+  stop (callback) {
+    this.emit('stop', callback);
   }
 }
 
