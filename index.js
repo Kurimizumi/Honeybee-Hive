@@ -80,11 +80,17 @@ const hive = function(userSettings) {
       //Pass in the socket
       hiveConnectionHandler(socket, mongoose, eventHandler, settings);
     });
+    //Listen for stop events
+    eventHandler.on('stop', function(callback) {
+      //Stop the ws server gracefully. Callback is called once the server has
+      //finished all current connections.
+      server.close();
+    });
   }
   //Listen for stop events
   eventHandler.on('stop', function(callback) {
-    //Stop the server gracefully. Callback is called once the server has
-    //finished all current connctions
+    //Stop the TCP server gracefully. Callback is called once the server has
+    //finished all current connections
     server.close(function(error) {
       callback(error);
     });
