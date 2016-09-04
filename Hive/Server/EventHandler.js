@@ -27,10 +27,6 @@ class EventHandler extends events.EventEmitter {
   stop () {
     this.emit('stop');
   }
-  //Fired once the server is stopped
-  stopped () {
-    this.emit('stopped');
-  }
 }
 
 module.exports = EventHandler;
