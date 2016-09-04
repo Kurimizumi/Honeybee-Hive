@@ -37,7 +37,7 @@ See [examples](https://github.com/Kurimizumi/Honeybee-Hive/tree/master/examples)
 The server gets called like this:
 ```javascript
 let HoneybeeHive = require('honeybee-hive');
-let eventEmitter = HoneybeeHive.Hive(settings);
+let eventHandler = HoneybeeHive.Hive(settings);
 ```
 
 The settings object is described below
@@ -78,7 +78,7 @@ let settings = {
 #### Event Emitter
 The main function returns an event emitter which we can then listen on, like this:
 ```javascript
-eventEmitter.on('eventName', function(eventArgs, eventArgs2) {
+eventHandler.on('eventName', function(eventArgs, eventArgs2) {
   //Some code here to process event arguments
 });
 ```
@@ -87,7 +87,7 @@ The events are detailed below
 ###### Create work
 We can listen for requests to create work like this:
 ```javascript
-eventEmitter.on('create_work', function(callback) {
+eventHandler.on('create_work', function(callback) {
   //We can send the work to the callback like this:
   callback({
     work: 0
@@ -100,7 +100,7 @@ eventEmitter.on('create_work', function(callback) {
 ###### Workgroup complete
 When a set of work is complete, we must verify it. We can do so like this:
 ```javascript
-eventEmitter.on('workgroup_complete', function(array, callback) {
+eventHandler.on('workgroup_complete', function(array, callback) {
   //Make sure that all the values of the array are equal
   for(let i = 0; i < array.length - 1; i++) {
     //If they aren't equal
@@ -120,15 +120,24 @@ eventEmitter.on('workgroup_complete', function(array, callback) {
 When a workgroup is validated, we can then bring it together with other validated workgroups, or datachunks, like this:
 ```javascript
 let total = 0;
-eventEmitter.on('new_datachunk', function(datachunk) {
+eventHandler.on('new_datachunk', function(datachunk) {
   //datachunk is the data that we submitted to the callback for workgroup_complete
   //We access the count property and add it to the total, and then log it to the console
   total += datachunk.count;
   console.log(total);
 });
 ```
-
 Remember that if order matters, then you'll need to submit an order with the work, and form a queue type system
+
+###### Stopping the server
+To stop the server you can do this:
+```javascript
+eventHandler.stop(function(error) {
+  //error is an Error object if the server wasn't running in the first place
+  //called once all existing connections have finished
+});
+```
+
 
 ###### Notes
 

@@ -82,11 +82,11 @@ const hive = function(userSettings) {
     });
   }
   //Listen for stop events
-  eventHandler.on('stop', function() {
+  eventHandler.on('stop', function(callback) {
     //Stop the server gracefully. Callback is called once the server has
     //finished all current connctions
     server.close(function(error) {
-      eventHandler.stopped();
+      callback(error);
     });
   });
   //Return the event emitter in order for the client to listen on it
