@@ -226,7 +226,7 @@ As you can see in the above examples, there are areas where an error object is r
 You can do something similar to a try/catch block in Java with if statements, importing the error objects. E.g.:
 ```javascript
 const HoneybeeHive = require('honeybee-hive');
-const errorList = HonybeeHive.errorList;
+const errorList = HoneybeeHive.errorList;
 const errorGroups = HoneybeeHive.errorGroups;
 function workHandler(error, work) {
   if(error) {
