@@ -35,9 +35,8 @@ honeybeeHive.Honeybee(settings, function(eventHandler) {
     if(error) {
       //Log the error
       console.log(error.toString());
-      //Resubmit if retries is less than 5
-      if(errorRetries < 5) {
-        errorRetries++;
+      //Resubmit if existing retries is less than 4
+      if(errorRetries++ < 4) {
         //Resubmit
         eventHandler.submit(piSection, submitHandler);
       }

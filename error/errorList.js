@@ -145,7 +145,7 @@ module.exports = {
   },
   //Verification of a message failed
   SecurityVerificationFailure: class SecurityVerificationFailure
-      extends errorGroups.SecurityFailure {
+      extends errorGroups.SecurityError {
     constructor (message) {
       super(message);
     }
