@@ -25,17 +25,50 @@ const settings = {
 
 //Create the client, connecting to the server with settings object
 honeybeeHive.Honeybee(settings, function(eventHandler) {
+  //Define variables for the workHandler so that we can resubmit if needed
+  let piSection = 0;
+  //Define variable for how many times we've retried on an error
+  let errorRetries = 0;
   //Define our submission handler, to handle what happens once we submit work
-  const submitHandler = function(success) {
+  const submitHandler = function(error, success) {
+    //If we error'd, try to resubmit
+    if(error) {
+      //Log the error
+      console.log(error.toString());
+      //Resubmit if retries is less than 5
+      if(errorRetries < 5) {
+        errorRetries++;
+        //Resubmit
+        eventHandler.submit(piSection, submitHandler);
+      }
+      //Return and stop
+      return;
+    }
+    //Reset errorRetries
+    errorRetries = 0;
     //Tell the client the status of our submission
     console.log('Submission ' + (success ? 'succeeded' : 'failed'));
     //Request more work, and pass it to the work handler
     eventHandler.request(workHandler);
   };
   //Define our work handler, to handle what happens when we receive work
-  const workHandler = function(work) {
+  const workHandler = function(error, work) {
+    if(error) {
+      //Log the error
+      console.log(error.toString());
+      //Retry if errorRetries is less than 5
+      if(errorRetries < 5) {
+        errorRetries++;
+        //Resubmit
+        eventHandler.request(workHandler);
+        //Return and stop
+        return;
+      }
+    }
+    //Reset errorRetries
+    errorRetries = 0;
     //Define our piSection letiable, to store the part of pi we calculated
-    let piSection = 0;
+    piSection = 0;
     //Define n for Leibniz's formula, and calculate current position in it
     let n = 1 + (4*10000*work.counter);
     //Loop from 0 (incl) to 1000000000 (excl)
