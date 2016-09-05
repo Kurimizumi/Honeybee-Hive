@@ -1,3 +1,4 @@
+'use strict';
 //Require our error groups object
 const errorGroups = require('./errorGroups.js');
 //Export error object

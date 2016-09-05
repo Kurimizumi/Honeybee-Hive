@@ -1,3 +1,4 @@
+'use strict';
 //Require our generic error
 var ExtendableError = require('./ExtendableError.js');
 //Export error object

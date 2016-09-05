@@ -1,3 +1,4 @@
+'use strict';
 //Export the class
 module.exports = class ExtendableError extends Error {
   //Constructor method
