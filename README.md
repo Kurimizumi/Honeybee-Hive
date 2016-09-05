@@ -147,10 +147,7 @@ eventHandler.stop(function() {
 The client gets called like this:
 ```javascript
 let HoneybeeHive = require('honeybee-hive');
-let eventHandler;
-HoneybeeHive.Honeybee(settings, function(evtHandler) {
-  //Set eventHandler to evtHandler
-  eventHandler = evtHandler;
+HoneybeeHive.Honeybee(settings, function(eventHandler) {
   //Wait for us to be registered
   eventHandler.once('registered', function() {
     //Request our first piece of work
@@ -192,7 +189,8 @@ eventHandler.once('registered', function() {
 ###### Request work
 We can request work like this:
 ```javascript
-eventHandler.request(function(work) {
+eventHandler.request(function(error, work) {
+  //If error is true, then we can process it as needed
   //work is the work that we specified on the server
   //we should process it and then send it for submission
 });
@@ -201,7 +199,8 @@ eventHandler.request(function(work) {
 ###### Submit work
 We can submit processed work like this:
 ```javascript
-eventHandler.submit(work, function(success) {
+eventHandler.submit(work, function(error, success) {
+  //If error is true then we can process it as needed
   //success tells us if the submission was successful. You should not retry on failure, rather just request new work
 });
 ```
@@ -211,15 +210,74 @@ eventHandler.submit(work, function(success) {
 ###### Combining the two
 We can combine requesting and submitting like this:
 ```javascript
-function workHandler(work) {
+function workHandler(error, work) {
   eventHandler.submit(work, submitHandler);
 }
-function submitHandler(success) {
+function submitHandler(error, success) {
   eventHandler.request(workHandler);
 }
 //Request first work
 eventHandler.request(workHandler);
 ```
+
+#### Error handling
+As you can see in the above examples, there are areas where an error object is returned.
+
+You can do something similar to a try/catch block in Java with if statements, importing the error objects. E.g.:
+```javascript
+const HoneybeeHive = require('honeybee-hive');
+const errorList = HonybeeHive.errorList;
+const errorGroups = HoneybeeHive.errorGroups;
+function workHandler(error, work) {
+  if(error) {
+    //Start try/catch-esque if/else if/else block
+    //Catch all security errors
+    if(error instanceof errorGroups.SecurityError) {
+      //Do something here
+    }
+    //Catch only post handshake errors
+    else if(error instanceof errorList.HandshakePostCompleteFailure) {
+      //Do something
+    }
+    //Catch all *other* handshake errors
+    else if(error instanceof errorGroups.HandshakeError) {
+      //Do something
+    }
+    //Catch either submit or request errors
+    else if(error instanceof errorGroups.SubmitError || error instanceof errorGroups.RequestError) {
+      //Do something
+    }
+    //Catch all other errors, including generic/unknown errors
+    else {
+      //Do something
+    }
+  }
+}
+```
+
+This is the complete list of errors, their description, and their error group:
+| Error Name                        | Error Group       | Error Description                                                                                                        |                                                                                           |
+|-----------------------------------|-------------------|--------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------|
+| DatabaseGeneric                   | DatabaseError     | Generic database errors which do not have a specific error associated                                                    |                                                                                           |
+| DatabaseNotFound                  | DatabaseError     | When a record was not found in the database (e.g. when the worker was not found as being a worker for the submitted data |                                                                                           |
+| GenericPayloadMissing             | GenericError      | When the encrypted payload is missing                                                                                    |                                                                                           |
+| GenericParametersMissing          | GenericError      | When parameters are missing (e.g. the type of message)                                                                   |                                                                                           |
+| GenericSecurityInformationMissing | GenericError      | When security information is missing (e.g. the IV used to encrypt the payload)                                           |                                                                                           |
+| HandshakeGeneric                  | HandshakeError    | When a generic handshake error occurs                                                                                    |                                                                                           |
+| HandshakeKeyMissing               | HandshakeError    | When the client doesn't provide an AES key                                                                               |                                                                                           |
+| HandshakePostCompleteFailure      | HandshakeError    | When the handshake fails elsewhere (e.g. someone edits the packets and fails to match the authentication tag)            |                                                                                           |
+| VerificationGeneric               | VerificationError | When a generic verification error occurs                                                                                 |                                                                                           |
+| VerificationNotExecuted           | VerificationError | When a user tries to execute an operation which requires verification, but they have not verified themselves yet         |                                                                                           |
+| RequestNoWork                     |                   | RequestError                                                                                                             | When a user tries to request work, but there is none remaining for the server to give out |
+| RequestPendingWork                | RequestError      | When a user tries to request work, but has work which is unsubmitted                                                     |                                                                                           |
+| SubmitNoData                      |                   | SubmitError                                                                                                              | When a user sends no completed work with the submission                                   |
+| SecurityInvalidKey                | SecurityError     | When an invalid key format is sent                                                                                       |                                                                                           |
+| SecurityKeyGenerationFailure      | SecurityError     | When an RSA keypair fails to generate                                                                                    |                                                                                           |
+| SecurityEncryptionFailure         | SecurityError     | When there's an error encrypting                                                                                         |                                                                                           |
+| SecurityDecryptionFailure         | SecurityError     | When there's an error decrypting                                                                                         |                                                                                           |
+| SecuritySigningFailure            | SecurityError     | When there's an error signing the message                                                                                |                                                                                           |
+| SecurityVerificationFailure       | SecurityError     | When there's an error when trying to verify a message                                                                    |                                                                                           |
+
 
 
 ###### Notes
