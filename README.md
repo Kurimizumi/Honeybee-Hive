@@ -256,27 +256,28 @@ function workHandler(error, work) {
 ```
 
 This is the complete list of errors, their description, and their error group:
-| Error Name                        | Error Group       | Error Description                                                                                                        |                                                                                           |
-|-----------------------------------|-------------------|--------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------|
-| DatabaseGeneric                   | DatabaseError     | Generic database errors which do not have a specific error associated                                                    |                                                                                           |
-| DatabaseNotFound                  | DatabaseError     | When a record was not found in the database (e.g. when the worker was not found as being a worker for the submitted data |                                                                                           |
-| GenericPayloadMissing             | GenericError      | When the encrypted payload is missing                                                                                    |                                                                                           |
-| GenericParametersMissing          | GenericError      | When parameters are missing (e.g. the type of message)                                                                   |                                                                                           |
-| GenericSecurityInformationMissing | GenericError      | When security information is missing (e.g. the IV used to encrypt the payload)                                           |                                                                                           |
-| HandshakeGeneric                  | HandshakeError    | When a generic handshake error occurs                                                                                    |                                                                                           |
-| HandshakeKeyMissing               | HandshakeError    | When the client doesn't provide an AES key                                                                               |                                                                                           |
-| HandshakePostCompleteFailure      | HandshakeError    | When the handshake fails elsewhere (e.g. someone edits the packets and fails to match the authentication tag)            |                                                                                           |
-| VerificationGeneric               | VerificationError | When a generic verification error occurs                                                                                 |                                                                                           |
-| VerificationNotExecuted           | VerificationError | When a user tries to execute an operation which requires verification, but they have not verified themselves yet         |                                                                                           |
-| RequestNoWork                     |                   | RequestError                                                                                                             | When a user tries to request work, but there is none remaining for the server to give out |
-| RequestPendingWork                | RequestError      | When a user tries to request work, but has work which is unsubmitted                                                     |                                                                                           |
-| SubmitNoData                      |                   | SubmitError                                                                                                              | When a user sends no completed work with the submission                                   |
-| SecurityInvalidKey                | SecurityError     | When an invalid key format is sent                                                                                       |                                                                                           |
-| SecurityKeyGenerationFailure      | SecurityError     | When an RSA keypair fails to generate                                                                                    |                                                                                           |
-| SecurityEncryptionFailure         | SecurityError     | When there's an error encrypting                                                                                         |                                                                                           |
-| SecurityDecryptionFailure         | SecurityError     | When there's an error decrypting                                                                                         |                                                                                           |
-| SecuritySigningFailure            | SecurityError     | When there's an error signing the message                                                                                |                                                                                           |
-| SecurityVerificationFailure       | SecurityError     | When there's an error when trying to verify a message                                                                    |                                                                                           |
+
+| Error Name                        | Error Group       | Error Description                                                                                                        |
+|-----------------------------------|-------------------|--------------------------------------------------------------------------------------------------------------------------|
+| DatabaseGeneric                   | DatabaseError     | Generic database errors which do not have a specific error associated                                                    |
+| DatabaseNotFound                  | DatabaseError     | When a record was not found in the database (e.g. when the worker was not found as being a worker for the submitted data |
+| GenericPayloadMissing             | GenericError      | When the encrypted payload is missing                                                                                    |
+| GenericParametersMissing          | GenericError      | When parameters are missing (e.g. the type of message)                                                                   |
+| GenericSecurityInformationMissing | GenericError      | When security information is missing (e.g. the IV used to encrypt the payload)                                           |
+| HandshakeGeneric                  | HandshakeError    | When a generic handshake error occurs                                                                                    |
+| HandshakeKeyMissing               | HandshakeError    | When the client doesn't provide an AES key                                                                               |
+| HandshakePostCompleteFailure      | HandshakeError    | When the handshake fails elsewhere (e.g. someone edits the packets and fails to match the authentication tag)            |
+| VerificationGeneric               | VerificationError | When a generic verification error occurs                                                                                 |
+| VerificationNotExecuted           | VerificationError | When a user tries to execute an operation which requires verification, but they have not verified themselves yet         |
+| RequestNoWork                     | RequestError      | When a user tries to request work, but there is none remaining for the server to give out                                |
+| RequestPendingWork                | RequestError      | When a user tries to request work, but has work which is unsubmitted                                                     |
+| SubmitNoData                      | SubmitError       | When a user sends no completed work with the submission                                                                  |
+| SecurityInvalidKey                | SecurityError     | When an invalid key format is sent                                                                                       |
+| SecurityKeyGenerationFailure      | SecurityError     | When an RSA keypair fails to generate                                                                                    |
+| SecurityEncryptionFailure         | SecurityError     | When there's an error encrypting                                                                                         |
+| SecurityDecryptionFailure         | SecurityError     | When there's an error decrypting                                                                                         |
+| SecuritySigningFailure            | SecurityError     | When there's an error signing the message                                                                                |
+| SecurityVerificationFailure       | SecurityError     | When there's an error when trying to verify a message                                                                    |
 
 
 
