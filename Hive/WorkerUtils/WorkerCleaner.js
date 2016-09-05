@@ -2,6 +2,8 @@
 //Require Worker and WorkGroup
 const Worker = require('../MongoSchemas/Worker.js');
 const WorkGroup = require('../MongoSchemas/WorkGroup');
+//Require errorList
+const errorList = require('../../error/errorList.js');
 //Export main function
 module.exports = function(mongoose, settings) {
   //If workTimeout is less than or equal to 0, do not use a timeout
@@ -21,7 +23,9 @@ module.exports = function(mongoose, settings) {
       if(error) {
         //Log to the console the error and then return to prevent further
         //execution
-        console.log('Error: DATABASE_GENERIC');
+        console.log(
+          new errorList.DatabaseGeneric('search workers failed').toString()
+        );
         //Return to prevent further exection
         return;
       }
@@ -30,7 +34,9 @@ module.exports = function(mongoose, settings) {
       const saveWorkGroup = function(error) {
         //If error, tell the user
         if(error) {
-          console.log('Error: DATABASE_GENERIC');
+          console.log(
+            new errorList.DatabaseGeneric('save workgroup failed').toString()
+          );
         }
       };
       //Define i for later
@@ -40,7 +46,9 @@ module.exports = function(mongoose, settings) {
         //Check for errors, if so don't continue
         if(error) {
           //Log to the console
-          console.log('Error: DATABASE_GENERIC');
+          console.log(
+            new errorList.DatabaseGeneric('search workgroup failed').toString()
+          );
           return;
         }
         //Loop through the workgroups, removing the worker

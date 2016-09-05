@@ -55,7 +55,13 @@ module.exports = function(eventHandler, settings) {
     socket.on('connect', function() {
       //Call register function
       register(socket, eventHandler, storage, settings.encryption.key,
-        function(clientPrivateKey, clientID) {
+          function(error, clientPrivateKey, clientID) {
+        //If error, halt - the user failed to register at startup for some
+        //reason
+        if(error) {
+          console.log(error.toString());
+          return;
+        }
         //Once finished, get the private key and clientID call the main function
         main(settings.connection.hostname, settings.connection.port,
           settings.encryption.key, eventHandler, clientPrivateKey, clientID);

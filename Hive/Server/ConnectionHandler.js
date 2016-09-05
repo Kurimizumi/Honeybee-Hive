@@ -7,8 +7,9 @@ const request = require('./Request.js');
 const submit = require('./Submit.js');
 
 
-//Import error handling function
-const errorHandler = require('../../Utils/errorHandler.js');
+//Import error handling functions
+const errorHandler = require('../../error/errorHandler.js');
+const errorList = require('../../error/errorList.js');
 //Export the message handling function
 //mongoose is the mongoose instance which has been configured to the database,
 //Socket is the socket passed by index, eventEmitter is the Event
@@ -26,7 +27,9 @@ module.exports = function(socket, mongoose, eventEmitter, settings) {
     //If the required parameters do not exist
     if(message == null || message.type == null) {
       //Send a message to the client to let them know why it failed
-      errorHandler.sendError(socket, 'GENERIC_PARAMETERS_MISSING', true);
+      errorHandler.sendError(socket,
+        new errorList.GenericParametersMissing(),
+        true);
       //Return to prevent further execution
       return;
     }
@@ -48,8 +51,10 @@ module.exports = function(socket, mongoose, eventEmitter, settings) {
       message.tag == null ||
       message.iv == null
     ) {
-      //Send an error to the client, but don't disconnect them
-      errorHandler.sendError(socket, 'GENERIC_MISSING_SECURITY_INFORMATION');
+      //Send an error to the client, and disconnect them
+      errorHandler.sendError(socket,
+        new errorList.GenericSecurityInformationMissing(),
+        true);
       //Stop execution
       return;
     }
@@ -79,8 +84,10 @@ module.exports = function(socket, mongoose, eventEmitter, settings) {
     //Past this point the user should have their user ID verified and attached
     //to the session.
     if(verified == null) {
-      //If the user has not verified who they are, do not continue
-      errorHandler.sendError(socket, 'STAGE_VERIFICATION_NOT_EXECUTED');
+      //If the user has not verified who they are, disconnect
+      errorHandler.sendError(socket,
+        new errorList.VerificationNotExecuted(),
+        true);
       //Stop running
       return;
     }

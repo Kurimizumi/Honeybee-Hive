@@ -1,8 +1,9 @@
 'use strict';
 //Import forge for encryption
 const forge = require('node-forge');
-//Import our error handling module
-const errorHandler = require('../../Utils/errorHandler.js');
+//Import our error handling modules
+const errorHandler = require('../../error/errorHandler.js');
+const errorList = require('../../error/errorList.js');
 //Import our encryption modules
 const RSA = require('simple-encryption').RSA;
 const AES = require('simple-encryption').AES;
@@ -11,7 +12,9 @@ module.exports = function(message, socket, eventEmitter, key) {
   //If the encrypted payload is not present, fail
   if(message.payload == null) {
     //Send an error, and disconnect
-    errorHandler.sendError(socket, 'GENERIC_PAYLOAD_MISSING', true);
+    errorHandler.sendError(socket,
+      new errorList.GenericPayloadMissing(),
+      true);
     //Return to prevent further execution
     return;
   }
@@ -22,14 +25,18 @@ module.exports = function(message, socket, eventEmitter, key) {
     decrypted = JSON.parse(RSA.decrypt(key, message.payload));
   } catch(e) {
     //If an error was thrown stop
-    errorHandler.sendError(socket, 'SECURITY_DECRYPTION_FAILURE', true);
+    errorHandler.sendError(socket,
+      new errorList.SecurityDecryptionFailure(),
+      true);
     //Return to prevent further execution
     return;
   }
   //Check if key exists in JSON
   if(decrypted.key == null) {
     //Tell user that the key wasn't found
-    errorHandler.sendError(socket, 'STAGE_HANDSHAKE_KEY_MISSING', true);
+    errorHandler.sendError(socket,
+      new errorList.HandshakeKeyMissing(),
+      true);
     //Return to prevent further execution
     return;
   }
@@ -38,7 +45,9 @@ module.exports = function(message, socket, eventEmitter, key) {
     forge.util.decode64(decrypted.key).length !== 32
   ) {
     //Not a string or not 256 bits, so fail
-    errorHandler.sendError(socket, 'SECURITY_INVALID_KEY', true);
+    errorHandler.sendError(socket,
+      new errorList.SecurityInvalidKey(),
+      true);
     //Return to prevent further execution
     return;
   }
@@ -49,7 +58,9 @@ module.exports = function(message, socket, eventEmitter, key) {
   try {
     encrypted = AES.encrypt(decrypted.key, iv, JSON.stringify('success'));
   } catch(e) {
-    errorHandler.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
+    errorHandler.sendError(socket,
+      new errorList.SecurityEncryptionFailure(),
+      true);
     //Stop execution
     return;
   }

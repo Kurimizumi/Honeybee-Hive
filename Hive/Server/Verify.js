@@ -3,7 +3,8 @@
 const AES = require('simple-encryption').AES;
 const RSA = require('simple-encryption').RSA;
 //Import error handler
-const errorHandler = require('../../Utils/errorHandler.js');
+const errorHandler = require('../../error/errorHandler.js');
+const errorList = require('../../error/errorList.js');
 //Import forge
 const forge = require('node-forge');
 
@@ -25,13 +26,16 @@ module.exports = function(message, mongoose, socket, eventEmitter, key,
     decrypted = JSON.parse(AES.decrypt(key, iv, tag, payload));
   } catch(e) {
     //Forward error to user and disconnect
-    errorHandler.sendError(socket, 'SECURITY_DECRYPTION_FAILURE', true);
+    errorHandler.sendError(socket,
+      new errorList.SecurityDecryptionFailure(),
+      true);
     //Prevent further execution
     return;
   }
   //Check that decryption was successful, if not disconnect user
   if(!decrypted) {
-    errorHandler.sendError(socket, 'STAGE_HANDSHAKE_POST_COMPLETE_FAILURE',
+    errorHandler.sendError(socket,
+      new errorList.HandshakePostCompleteFailure(),
       true);
     //stop execution
     return;
@@ -42,7 +46,9 @@ module.exports = function(message, mongoose, socket, eventEmitter, key,
   const md = decrypted.md;
   //Make sure that the required letiables were actually sent
   if(!id || !verify || !md) {
-    errorHandler.sendError(socket, 'GENERIC_PARAMETERS_MISSING', true);
+    errorHandler.sendError(socket,
+      new errorList.GenericParametersMissing(),
+      true);
     //Stop further execution
     return;
   }
@@ -50,12 +56,16 @@ module.exports = function(message, mongoose, socket, eventEmitter, key,
   return Worker.findOne({'_id': id}, function(error, worker) {
     //If error, tell the user and cut the session (something bad has happened)
     if(error) {
-      errorHandler.sendError(socket, 'DATABASE_GENERIC', true);
+      errorHandler.sendError(socket,
+        new errorList.DatabaseGeneric(),
+        true);
       return;
     }
     //If no worker was found
     if(!worker) {
-      errorHandler.sendError(socket, 'DATABASE_NOT_FOUND', true);
+      errorHandler.sendError(socket,
+        new errorList.DatabaseNotFound(),
+        true);
       return;
     }
     //Get the public key for the worker
@@ -67,7 +77,9 @@ module.exports = function(message, mongoose, socket, eventEmitter, key,
     try {
       verified = RSA.verify(publicKey, verify, md);
     } catch(e) {
-      errorHandler.sendError(socket, 'SECURITY_VERIFICATION_FAILURE', true);
+      errorHandler.sendError(socket,
+        new errorList.SecurityVerificationFailure(),
+        true);
       //Stop execution
       return;
     }
@@ -83,7 +95,9 @@ module.exports = function(message, mongoose, socket, eventEmitter, key,
     try {
       message = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
     } catch(e) {
-      errorHandler.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
+      errorHandler.sendError(socket,
+        new errorList.SecurityEncryptionFailure(),
+        true);
       //Stop execution
       return;
     }

@@ -132,3 +132,6 @@ const honeybee = function(userSettings, callback) {
 //Export functions
 module.exports.Hive = hive;
 module.exports.Honeybee = honeybee;
+//Export error lists for convenience
+module.exports.errorGroups = require('./error/errorGroups.js');
+module.exports.errorList = require('./error/errorList.js');

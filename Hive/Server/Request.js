@@ -1,6 +1,7 @@
 'use strict';
 //Import error handler
-const errorHandler = require('../../Utils/errorHandler.js');
+const errorHandler = require('../../error/errorHandler.js');
+const errorList = require('../../error/errorList.js');
 //Import AES library
 const AES = require('simple-encryption').AES;
 
@@ -21,14 +22,17 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
   try {
     decrypted = JSON.parse(AES.decrypt(key, iv, tag, payload));
   } catch(e) {
-    errorHandler.sendError(socket, 'SECURITY_DECRYPTION_FAILURE', true);
+    errorHandler.sendError(socket,
+      new errorList.SecurityDecryptionFailure(),
+      true);
     return;
   }
   if(decrypted == null ||
     decrypted.request == null ||
     decrypted.request.toUpperCase() !== 'REQUEST') {
       //Stop execution, we cannot verify the user...
-      errorHandler.sendError(socket, 'STAGE_HANDSHAKE_POST_COMPLETE_FAILURE',
+      errorHandler.sendError(socket,
+        new errorList.HandshakePostCompleteFailure(),
         true);
       return;
   }
@@ -57,7 +61,9 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
   }, function(error, workgroups) {
     //Pass database errors onto client
     if(error) {
-      errorHandler.sendError(socket, 'DATABASE_GENERIC', true);
+      errorHandler.sendError(socket,
+        new errorList.DatabaseGeneric(),
+        true);
       //Stop execution
       return;
     }
@@ -67,7 +73,9 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
       Worker.findOne({_id: userID}, function(error, worker) {
         //If error, tell the user and stop executing
         if(error) {
-          errorHandler.sendError(socket, 'DATABASE_GENERIC', true);
+          errorHandler.sendError(socket,
+            new errorList.DatabaseGeneric(),
+            true);
           //Stop execution
           return;
         }
@@ -76,7 +84,9 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
         worker.save(function(error) {
           //If error, tell the user and stop executing
           if(error) {
-            errorHandler.sendError(socket, 'DATABASE_GENERIC', true);
+            errorHandler.sendError(socket,
+              new errorList.DatabaseGeneric(),
+              true);
             return;
           }
           //Find non full work groups
@@ -93,7 +103,9 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
             function(error, workgroup) {
               //Pass database errors onto the client
               if(error) {
-                errorHandler.sendError(socket, 'DATABASE_GENERIC', true);
+                errorHandler.sendError(socket,
+                  new errorList.DatabaseGeneric(),
+                  true);
                 //Stop execution
                 return;
               }
@@ -104,7 +116,8 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
                 eventEmitter.emit('create_work', function(work) {
                   //If there's no work left
                   if(work == null) {
-                    errorHandler.sendError(socket, 'STAGE_REQUEST_NO_WORK',
+                    errorHandler.sendError(socket,
+                      new errorList.RequestNoWork(),
                       true);
                     //Stop execution
                     return;
@@ -117,7 +130,9 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
                   newworkgroup.save(function(error) {
                     //If database error, pass it onto the user
                     if(error) {
-                      errorHandler.sendError(socket, 'DATABASE_GENERIC', true);
+                      errorHandler.sendError(socket,
+                        new errorList.DatabaseError(),
+                        true);
                       //Stop execution
                       return;
                     }
@@ -134,7 +149,8 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
                       encrypted = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
                     } catch(e) {
                       errorHandler.sendError(socket,
-                        'SECURITY_ENCRYPTION_FAILURE', true);
+                        new errorList.SecurityEncryptionFailure(),
+                        true);
                       //Stop execution
                       return;
                     }
@@ -156,7 +172,9 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
                 workgroup.save(function(error) {
                   //Pass database errors to user
                   if(error) {
-                    errorHandler.sendError(socket, 'DATABASE_GENERIC', true);
+                    errorHandler.sendError(socket,
+                      new errorList.DatabaseGeneric(),
+                      true);
                     //stop execution
                     return;
                   }
@@ -173,7 +191,7 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
                     encrypted = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
                   } catch(e) {
                     errorHandler.sendError(socket,
-                      'SECURITY_ENCRYPTION_FAILURE', true);
+                      new errorList.SecurityEncryptionFailure(), true);
                     //Stop execution
                     return;
                   }
@@ -193,7 +211,8 @@ module.exports = function(message, mongoose, socket, eventEmitter, key, userID,
       });
     } else {
       //Pending work
-      errorHandler.sendError(socket, 'STAGE_REQUEST_PENDING_WORK', true);
+      errorHandler.sendError(socket,
+        new errorList.RequestPendingWork(), true);
       //Stop execution/return for consistency
       return;
     }

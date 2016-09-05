@@ -6,19 +6,24 @@ let handshake = require('./Handshake.js');
 let AES = require('simple-encryption').AES;
 
 //Error module
-let errorHandler = require('../Utils/errorHandler.js');
+let errorHandler = require('../error/errorHandler.js');
+let errorList = require('../error/errorList.js');
 
 //Export main function
 module.exports = function(socket, eventHandler, storage, serverPublicKey,
   callback) {
   //Start handshake
-  handshake(socket, serverPublicKey, function(sessionKey) {
+  handshake(socket, serverPublicKey, function(error, sessionKey) {
+    //Check for errors
+    if(error) {
+      //If so, callback to the user with the error
+      return callback(error);
+    }
     //Once handshake is successful, listen for another message from registering
     socket.once('message', function(message) {
-      if(errorHandler.findError(message.error)) {
+      if(message.error) {
         //Error has occured
-        console.log('Error: ' + errorHandler.findError(message.error));
-        return;
+        return callback(errorHandler.createError(error));
       }
       //Get encryption information
       let payload = message.payload;
@@ -29,13 +34,12 @@ module.exports = function(socket, eventHandler, storage, serverPublicKey,
       try {
         decrypted = JSON.parse(AES.decrypt(sessionKey, iv, tag, payload));
       } catch(e) {
-        console.log('Error: SECURITY_DECRYPTION_FAILURE');
-        return;
+        return callback(new errorList.SecurityDecryptionFailure());
       }
       let privateKey = decrypted.privateKey;
       storage.setItem('key', privateKey);
       storage.setItem('id', message.id);
-      callback(privateKey, message.id);
+      callback(null, privateKey, message.id);
     });
     //Prepare register message
     let jsonmsg = {
@@ -49,15 +53,14 @@ module.exports = function(socket, eventHandler, storage, serverPublicKey,
     try {
       encrypted = AES.encrypt(sessionKey, iv, JSON.stringify(jsonmsg));
     } catch(e) {
-      console.log('Error: SECURITY_ENCRYPTION_FAILURE');
-      return;
+      return callback(new errorList.SecurityEncryptionFailure());
     }
     //Send registration message
     try {
       socket.sendMessage({type: 'register', payload: encrypted.encrypted,
         tag: encrypted.tag, iv: iv});
     } catch(e) {
-      //Destroy socket
+      //Destroy socket for something has gone wrong and we want to be sure
       socket.destroy();
       return;
     }
