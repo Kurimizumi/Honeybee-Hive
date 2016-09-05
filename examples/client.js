@@ -1,9 +1,9 @@
 'use strict';
 //Calculate pi using the Leibniz formula
 //Import the index file (usually honeybee-hive)
-let honeybeeHive = require('../index.js');
+const honeybeeHive = require('../index.js');
 //Import the fs module in order to import the key
-let fs = require('fs');
+const fs = require('fs');
 //Define letious settings
 const PORT = 54321;
 const ADDRESS = 'localhost';
