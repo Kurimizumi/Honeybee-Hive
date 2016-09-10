@@ -10,7 +10,7 @@ module.exports.sendError = function(socket, error, disconnect) {
       //Convert error to JSON
       error: {
         name: error.name,
-        message: error.message,
+        message: error.message || error.name,
         stack: error.stack
       }
     }, function(error) {
