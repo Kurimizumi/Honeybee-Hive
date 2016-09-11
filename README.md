@@ -57,6 +57,9 @@ let settings = {
   work: {
     groupMax: 10 //How many datasets must be submitted before the workgroup is considered completed. Default: 10
   },
+  proofOfWork: {
+    strength: 4 //How difficult should the proof of work problem be? Higher values help to prevent spam, but take longer to calculate on average. Set to -1 to be (essentially) off. Default: 4
+  },
   encryption: {
     key: "some private key" //NO DEFAULT. YOU MUST SET THIS. The PEM encoded RSA private key for the server
   },

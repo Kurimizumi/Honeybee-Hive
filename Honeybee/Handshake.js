@@ -38,12 +38,8 @@ module.exports = function(socket, serverPublicKey, callback) {
     if(decrypted == null) {
       return callback(new errorList.HandshakeGeneric());
     }
-    //Encrypted text wasn't correct
-    if(decrypted !== 'success') {
-      return callback(new errorList.HandshakeGeneric());
-    }
-    //Callback to the caller with the sessionKey and no error
-    callback(null, sessionKey);
+    //Callback to the caller with the challenge, sessionKey, and no error
+    callback(null, decrypted, sessionKey);
   });
   //Send a message
   try {

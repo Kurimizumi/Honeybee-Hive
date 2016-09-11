@@ -21,7 +21,7 @@ module.exports = function(socket, mongoose, eventEmitter, settings) {
     socket.destroy();
   });
   //Define aesKey, verified, and id so they persist between messages
-  let aesKey, verified, id;
+  let aesKey, challenge, verified, id;
   //Listen for a message from the client. message is a javascript object
   socket.on('message', function(message) {
     //If the required parameters do not exist
@@ -37,8 +37,11 @@ module.exports = function(socket, mongoose, eventEmitter, settings) {
     if(message.type.toUpperCase() === 'HANDSHAKE') {
       //Call the handshake with the message, socket, eventEmitter and the
       //private RSA key
-      aesKey = handshake(message, socket, eventEmitter,
+      const obj = handshake(message, socket, eventEmitter,
         settings.encryption.key);
+      //Set variables from object
+      aesKey = obj.key;
+      challenge = obj.challenge;
       //Return to prevent further execution until next message
       return;
     }
@@ -64,7 +67,8 @@ module.exports = function(socket, mongoose, eventEmitter, settings) {
     ) {
       //Call register function with the message, socket, eventEmitter and the
       //session key
-      register(message, mongoose, socket, eventEmitter, aesKey);
+      register(message, mongoose, socket, eventEmitter, aesKey, challenge,
+        settings.proofOfWork.strength);
       //Return to prevent further execution until the next message
       return;
     }
@@ -72,7 +76,8 @@ module.exports = function(socket, mongoose, eventEmitter, settings) {
     else if(message.type.toUpperCase() === 'VERIFY') {
       //Call verify function with message, socket, eventEmitter, session key,
       //and a callback due to mongodb being asynchronous
-      verify(message, mongoose, socket, eventEmitter, aesKey, function(verif) {
+      verify(message, mongoose, socket, eventEmitter, aesKey, challenge,
+          settings.proofOfWork.strength, function(verif) {
         verified = verif;
         if(verified) {
           id = message.id;

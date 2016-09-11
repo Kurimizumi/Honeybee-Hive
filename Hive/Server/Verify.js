@@ -11,8 +11,11 @@ const forge = require('node-forge');
 //Mongoose schemas
 const Worker = require('../MongoSchemas/Worker.js');
 
+//Import hashcash
+const hashcashgen = require('hashcashgen');
+
 module.exports = function(message, mongoose, socket, eventEmitter, key,
-  callback) {
+  challenge, strength, callback) {
   //Supposed user ID
   const id = message.id;
   //Get encryption information
@@ -44,12 +47,23 @@ module.exports = function(message, mongoose, socket, eventEmitter, key,
   const verify = decrypted.verify;
   //hash
   const md = decrypted.md;
-  //Make sure that the required letiables were actually sent
-  if(!id || !verify || !md) {
+  //hashcash
+  const hashcash = decrypted.hashcash;
+  //Make sure that the required variables were actually sent
+  if(!id || !verify || !md || !hashcash) {
     errorHandler.sendError(socket,
       new errorList.GenericParametersMissing(),
       true);
     //Stop further execution
+    return;
+  }
+  //Check the hashcash against the challenge
+  if(!hashcashgen.check(challenge, strength, hashcash)) {
+    //Proof of work failed. Halt.
+    errorHandler.sendError(socket,
+      new errorList.HandshakeProofOfWorkFailure(),
+      true
+    );
     return;
   }
   //Find the ID that the user provided

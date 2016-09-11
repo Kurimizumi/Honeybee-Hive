@@ -7,9 +7,9 @@ const AES = require('simple-encryption').AES;
 const errorHandler = require('../error/errorHandler.js');
 const errorList = require('../error/errorList.js');
 module.exports = function(socket, eventHandler, serverPublicKey,
-  clientPrivateKey, clientID, callback) {
+  clientPrivateKey, clientID, strength, callback) {
   verify(socket, eventHandler, serverPublicKey, clientPrivateKey, clientID,
-    function(error, verified, sessionKey) {
+    strength, function(error, verified, sessionKey) {
     //If we're passed an error
     if(error) {
       //Pass it on

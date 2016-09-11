@@ -34,6 +34,9 @@ const hive = function(userSettings) {
     work: {
       groupMax: 10
     },
+    proofOfWork: {
+      strength: 4
+    },
     sections: {
       disableRegistration: false
     },
@@ -119,6 +122,9 @@ const honeybee = function(userSettings, callback) {
     connection: {
       hostname: 'localhost',
       port: 54321
+    },
+    proofOfWork: {
+      strength: 4
     }
   });
   //Create an instance of eventEmitter in order to be able to use it later

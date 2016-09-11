@@ -9,11 +9,14 @@ let AES = require('simple-encryption').AES;
 let errorHandler = require('../error/errorHandler.js');
 let errorList = require('../error/errorList.js');
 
+//Import hashcash
+const hashcashgen = require('hashcashgen');
+
 //Export main function
 module.exports = function(socket, eventHandler, storage, serverPublicKey,
-  callback) {
+  strength, callback) {
   //Start handshake
-  handshake(socket, serverPublicKey, function(error, sessionKey) {
+  handshake(socket, serverPublicKey, function(error, challenge, sessionKey) {
     //Check for errors
     if(error) {
       //If so, callback to the user with the error
@@ -41,17 +44,16 @@ module.exports = function(socket, eventHandler, storage, serverPublicKey,
       storage.setItem('id', message.id);
       callback(null, privateKey, message.id);
     });
-    //Prepare register message
-    let jsonmsg = {
-      register: 'register'
-    };
+    //Generate hashcash
+    const hashcash = hashcashgen(challenge, strength);
+    console.log(hashcash);
     //Declare encrypted letiable
     let encrypted;
     //Generate IV
     let iv = AES.generateIV();
     //Try to encrypt
     try {
-      encrypted = AES.encrypt(sessionKey, iv, JSON.stringify(jsonmsg));
+      encrypted = AES.encrypt(sessionKey, iv, JSON.stringify(hashcash));
     } catch(e) {
       return callback(new errorList.SecurityEncryptionFailure());
     }

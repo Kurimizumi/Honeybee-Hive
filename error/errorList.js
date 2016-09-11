@@ -59,11 +59,19 @@ module.exports = {
   },
   //If the hanshake fails later on (e.g. not encrypted properly)
   HandshakePostCompleteFailure: class HandshakePostCompleteFailure
-          extends errorGroups.HandshakeError {
+      extends errorGroups.HandshakeError {
     constructor (message) {
       super(message);
     }
   },
+  //If the proof of work failed
+  HandshakeProofOfWorkFailure: class HandshakeProofOfWorkFailure
+      extends errorGroups.HandshakeError {
+    constructor (message) {
+      super(message);
+    }
+  },
+
 
   //Verification errors
   //Generic verification error

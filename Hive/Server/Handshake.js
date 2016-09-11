@@ -7,6 +7,8 @@ const errorList = require('../../error/errorList.js');
 //Import our encryption modules
 const RSA = require('simple-encryption').RSA;
 const AES = require('simple-encryption').AES;
+//Import idgen for challenge creation
+const idgen = require('idgen');
 //Should return an AES key
 module.exports = function(message, socket, eventEmitter, key) {
   //If the encrypted payload is not present, fail
@@ -51,12 +53,14 @@ module.exports = function(message, socket, eventEmitter, key) {
     //Return to prevent further execution
     return;
   }
+  //Generate a challenge for hashcash
+  const challenge = idgen();
   //Generate a 12 byte IV for AES-GCM
   const iv = AES.generateIV();
   //Declare encrypted letiable for try/catch
   let encrypted;
   try {
-    encrypted = AES.encrypt(decrypted.key, iv, JSON.stringify('success'));
+    encrypted = AES.encrypt(decrypted.key, iv, JSON.stringify(challenge));
   } catch(e) {
     errorHandler.sendError(socket,
       new errorList.SecurityEncryptionFailure(),
@@ -73,6 +77,6 @@ module.exports = function(message, socket, eventEmitter, key) {
     socket.destroy();
     return;
   }
-  //Return the key to the connection handler
-  return decrypted.key;
+  //Return the key and the challenge to the connection handler
+  return {key: decrypted.key, challenge: challenge};
 };
