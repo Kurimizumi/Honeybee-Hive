@@ -45,3 +45,6 @@ openssl_test
 
 # examples persist directory
 examples/persist
+
+# test persist directory
+persist
