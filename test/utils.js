@@ -3,11 +3,11 @@ let expect = require('chai').expect;
 let errorHandler = require('../error/errorHandler.js');
 describe('Error handling', function() {
   it('converts error object to error instance', function() {
-    let validError = errorHandler.createError({
+    const validError = errorHandler.createError({
       name: 'SecurityEncryptionFailure',
       message: 'valid error'
     });
-    let invalidError = errorHandler.createError({
+    const invalidError = errorHandler.createError({
       name: 'SomeInvalidErrorThatCannotBeFound',
       message: 'invalid error'
     });

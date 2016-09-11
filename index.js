@@ -89,6 +89,7 @@ const hive = function(userSettings) {
       //finished all current connections.
       server.close(function(error) {
         wsserver.close(function() {
+          mongoose.disconnect();
           callback();
         });
       });
@@ -99,6 +100,7 @@ const hive = function(userSettings) {
       //Stop the TCP server gracefully. Callback is called once the server has
       //finished all current connections
       server.close(function(error) {
+        mongoose.disconnect();
         callback();
       });
     });
