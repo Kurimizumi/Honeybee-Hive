@@ -12,7 +12,7 @@ let request = require('./Request.js');
 let submit = require('./Submit.js');
 
 let main = function(address, port, serverPublicKey, eventHandler,
-  clientPrivateKey, clientID) {
+  clientPrivateKey, clientID, strength) {
   //Register for alerts
   eventHandler.on('request', function(callback) {
     //Create socket
@@ -22,7 +22,7 @@ let main = function(address, port, serverPublicKey, eventHandler,
     //Wait until we are connected
     socket.on('connect', function() {
       request(socket, eventHandler, serverPublicKey,
-        clientPrivateKey, clientID, callback);
+        clientPrivateKey, clientID, strength, callback);
     });
   });
   eventHandler.on('submit', function(data, callback) {
@@ -33,7 +33,7 @@ let main = function(address, port, serverPublicKey, eventHandler,
     //Wait until we are connected
     socket.on('connect', function() {
       submit(socket, eventHandler, serverPublicKey,
-        clientPrivateKey, clientID, data, callback);
+        clientPrivateKey, clientID, strength, data, callback);
     });
   });
   //Alert client that we have registered and are ready for work
@@ -55,10 +55,18 @@ module.exports = function(eventHandler, settings) {
     socket.on('connect', function() {
       //Call register function
       register(socket, eventHandler, storage, settings.encryption.key,
-        function(clientPrivateKey, clientID) {
+          settings.proofOfWork.strength,
+          function(error, clientPrivateKey, clientID) {
+        //If error, halt - the user failed to register at startup for some
+        //reason
+        if(error) {
+          console.log(error.toString());
+          return;
+        }
         //Once finished, get the private key and clientID call the main function
         main(settings.connection.hostname, settings.connection.port,
-          settings.encryption.key, eventHandler, clientPrivateKey, clientID);
+          settings.encryption.key, eventHandler, clientPrivateKey, clientID,
+          settings.proofOfWork.strength);
       });
     });
     //Stop execution (main is called once connected)

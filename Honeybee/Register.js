@@ -6,19 +6,27 @@ let handshake = require('./Handshake.js');
 let AES = require('simple-encryption').AES;
 
 //Error module
-let errorHandler = require('../Utils/errorHandler.js');
+let errorHandler = require('../error/errorHandler.js');
+let errorList = require('../error/errorList.js');
+
+//Import hashcash
+const hashcashgen = require('hashcashgen');
 
 //Export main function
 module.exports = function(socket, eventHandler, storage, serverPublicKey,
-  callback) {
+  strength, callback) {
   //Start handshake
-  handshake(socket, serverPublicKey, function(sessionKey) {
+  handshake(socket, serverPublicKey, function(error, challenge, sessionKey) {
+    //Check for errors
+    if(error) {
+      //If so, callback to the user with the error
+      return callback(error);
+    }
     //Once handshake is successful, listen for another message from registering
     socket.once('message', function(message) {
-      if(errorHandler.findError(message.error)) {
+      if(message.error) {
         //Error has occured
-        console.log('Error: ' + errorHandler.findError(message.error));
-        return;
+        return callback(errorHandler.createError(error));
       }
       //Get encryption information
       let payload = message.payload;
@@ -29,35 +37,32 @@ module.exports = function(socket, eventHandler, storage, serverPublicKey,
       try {
         decrypted = JSON.parse(AES.decrypt(sessionKey, iv, tag, payload));
       } catch(e) {
-        console.log('Error: SECURITY_DECRYPTION_FAILURE');
-        return;
+        return callback(new errorList.SecurityDecryptionFailure());
       }
       let privateKey = decrypted.privateKey;
       storage.setItem('key', privateKey);
       storage.setItem('id', message.id);
-      callback(privateKey, message.id);
+      callback(null, privateKey, message.id);
     });
-    //Prepare register message
-    let jsonmsg = {
-      register: 'register'
-    };
+    //Generate hashcash
+    const hashcash = hashcashgen(challenge, strength);
+    console.log(hashcash);
     //Declare encrypted letiable
     let encrypted;
     //Generate IV
     let iv = AES.generateIV();
     //Try to encrypt
     try {
-      encrypted = AES.encrypt(sessionKey, iv, JSON.stringify(jsonmsg));
+      encrypted = AES.encrypt(sessionKey, iv, JSON.stringify(hashcash));
     } catch(e) {
-      console.log('Error: SECURITY_ENCRYPTION_FAILURE');
-      return;
+      return callback(new errorList.SecurityEncryptionFailure());
     }
     //Send registration message
     try {
       socket.sendMessage({type: 'register', payload: encrypted.encrypted,
         tag: encrypted.tag, iv: iv});
     } catch(e) {
-      //Destroy socket
+      //Destroy socket for something has gone wrong and we want to be sure
       socket.destroy();
       return;
     }

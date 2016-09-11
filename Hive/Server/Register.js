@@ -4,11 +4,49 @@ const forge = require('node-forge');
 //AES helper
 const AES = require('simple-encryption').AES;
 //Error handler
-const errorHandler = require('../../Utils/errorHandler.js');
+const errorHandler = require('../../error/errorHandler.js');
+const errorList = require('../../error/errorList.js');
 //Import worker schema in order to register the new worker
 const Worker = require('../MongoSchemas/Worker.js');
+//Import hashcash
+const hashcashgen = require('hashcashgen');
 //Export single function for registration
-module.exports = function(message, mongoose, socket, eventEmitter, key) {
+module.exports = function(message, mongoose, socket, eventEmitter, key,
+    challenge, strength) {
+  //Get encryption information
+  const payload = message.payload;
+  const iv = message.iv;
+  const tag = message.tag;
+  //Define encrypted letiable for try/catch
+  let decrypted;
+  //Catch any errors during decryption
+  try {
+    decrypted = JSON.parse(AES.decrypt(key, iv, tag, payload));
+  } catch(e) {
+    //Forward error to user and disconnect
+    errorHandler.sendError(socket,
+      new errorList.SecurityDecryptionFailure(),
+      true);
+    //Prevent further execution
+    return;
+  }
+  //Check that decryption was successful, if not disconnect user
+  if(!decrypted) {
+    errorHandler.sendError(socket,
+      new errorList.HandshakePostCompleteFailure(),
+      true);
+    //stop execution
+    return;
+  }
+  //Check that the hashcash was true
+  if(!hashcashgen.check(challenge, strength, decrypted)) {
+    //Proof of work failed. Halt.
+    errorHandler.sendError(socket,
+      new errorList.HandshakeProofOfWorkFailure(),
+      true
+    );
+    return;
+  }
   //Create new worker
   const newWorker = new Worker();
   //Create a keypair
@@ -17,7 +55,9 @@ module.exports = function(message, mongoose, socket, eventEmitter, key) {
     //occured
     if(keyPair == null) {
       //Stop on error
-      errorHandler.sendError(socket, 'SECURITY_KEY_GENERATION_FAILURE', true);
+      errorHandler.sendError(socket,
+        new errorList.SecurityKeyGenerationFailure(),
+        true);
       //Return to stop further execution
       return;
     }
@@ -34,7 +74,9 @@ module.exports = function(message, mongoose, socket, eventEmitter, key) {
       //If saving throws an error, tell the user what the error was
       if(error) {
         //Error and disconnect from user
-        errorHandler.sendError(socket, 'DATABASE_GENERIC', true);
+        errorHandler.sendError(socket,
+          new errorList.DatabaseGeneric(),
+          true);
         //Return to stop further execution
         return;
       }
@@ -50,7 +92,9 @@ module.exports = function(message, mongoose, socket, eventEmitter, key) {
       try {
         message = AES.encrypt(key, iv, JSON.stringify(jsonmsg));
       } catch(e) {
-        errorHandler.sendError(socket, 'SECURITY_ENCRYPTION_FAILURE', true);
+        errorHandler.sendError(socket,
+          new errorList.SecurityEncryptionFailure(),
+          true);
         //Stop execution
         return;
       }

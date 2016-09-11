@@ -1,25 +1,30 @@
 'use strict';
 //Import verification module
-let verify = require('./Verify.js');
+const verify = require('./Verify.js');
 //Import AES module
-let AES = require('simple-encryption').AES;
+const AES = require('simple-encryption').AES;
 //Import error module
-let errorHandler = require('../Utils/errorHandler.js');
+const errorHandler = require('../error/errorHandler.js');
+const errorList = require('../error/errorList.js');
 module.exports = function(socket, eventHandler, serverPublicKey,
-  clientPrivateKey, clientID, callback) {
+  clientPrivateKey, clientID, strength, callback) {
   verify(socket, eventHandler, serverPublicKey, clientPrivateKey, clientID,
-    function(verified, sessionKey) {
+    strength, function(error, verified, sessionKey) {
+    //If we're passed an error
+    if(error) {
+      //Pass it on
+      return callback(error);
+    }
     //If we're not verified
     if(!verified) {
-      console.log('Error: SECURITY_VERIFICATION_FAILURE');
-      return;
+      return callback(new errorList.SecurityEncryptionFailure());
     }
     //Receive work
     socket.once('message', function(message) {
       //If we get an error
-      if(errorHandler.findError(message.error)) {
-        console.log('Error: ' + errorHandler.findError(message.error));
-        return;
+      if(message.error) {
+        //pass it on
+        return callback(errorHandler.createError(message.error));
       }
       //Get encryption information
       let payload = message.payload;
@@ -30,19 +35,13 @@ module.exports = function(socket, eventHandler, serverPublicKey,
       try {
         decrypted = JSON.parse(AES.decrypt(sessionKey, iv, tag, payload));
       } catch(e) {
-        console.log('Error: SECURITY_DECRYPTION_FAILURE');
-        return;
+        return callback(new errorList.SecurityDecryptionFailure());
       }
       //If authentication failed
       if(!decrypted) {
-        console.log('Error: STAGE_HANDSHAKE_POST_COMPLETE_FAILURE');
-        return;
+        return callback(new errorList.HandshakePostCompleteFailure());
       }
-      //I'm not sure why, but apparently we need to parse it again for it not
-      //to break
-      //when receiving a current workgroup
-      let work = decrypted.work;
-      callback(work);
+      callback(null, decrypted.work);
     });
     //Prepare message for sending
     let jsonmsg = {
@@ -55,8 +54,7 @@ module.exports = function(socket, eventHandler, serverPublicKey,
     try {
       encrypted = AES.encrypt(sessionKey, iv, JSON.stringify(jsonmsg));
     } catch(e) {
-      console.log('Error: SECURITY_ENCRYPTION_FAILURE');
-      return;
+      return callback(new errorList.SecurityEncryptionFailure());
     }
     try {
       socket.sendMessage({type: 'request', payload: encrypted.encrypted,

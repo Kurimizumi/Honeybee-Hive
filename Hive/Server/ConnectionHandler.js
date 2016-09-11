@@ -7,8 +7,9 @@ const request = require('./Request.js');
 const submit = require('./Submit.js');
 
 
-//Import error handling function
-const errorHandler = require('../../Utils/errorHandler.js');
+//Import error handling functions
+const errorHandler = require('../../error/errorHandler.js');
+const errorList = require('../../error/errorList.js');
 //Export the message handling function
 //mongoose is the mongoose instance which has been configured to the database,
 //Socket is the socket passed by index, eventEmitter is the Event
@@ -20,13 +21,15 @@ module.exports = function(socket, mongoose, eventEmitter, settings) {
     socket.destroy();
   });
   //Define aesKey, verified, and id so they persist between messages
-  let aesKey, verified, id;
+  let aesKey, challenge, verified, id;
   //Listen for a message from the client. message is a javascript object
   socket.on('message', function(message) {
     //If the required parameters do not exist
     if(message == null || message.type == null) {
       //Send a message to the client to let them know why it failed
-      errorHandler.sendError(socket, 'GENERIC_PARAMETERS_MISSING', true);
+      errorHandler.sendError(socket,
+        new errorList.GenericParametersMissing(),
+        true);
       //Return to prevent further execution
       return;
     }
@@ -34,8 +37,11 @@ module.exports = function(socket, mongoose, eventEmitter, settings) {
     if(message.type.toUpperCase() === 'HANDSHAKE') {
       //Call the handshake with the message, socket, eventEmitter and the
       //private RSA key
-      aesKey = handshake(message, socket, eventEmitter,
+      const obj = handshake(message, socket, eventEmitter,
         settings.encryption.key);
+      //Set variables from object
+      aesKey = obj.key;
+      challenge = obj.challenge;
       //Return to prevent further execution until next message
       return;
     }
@@ -48,8 +54,10 @@ module.exports = function(socket, mongoose, eventEmitter, settings) {
       message.tag == null ||
       message.iv == null
     ) {
-      //Send an error to the client, but don't disconnect them
-      errorHandler.sendError(socket, 'GENERIC_MISSING_SECURITY_INFORMATION');
+      //Send an error to the client, and disconnect them
+      errorHandler.sendError(socket,
+        new errorList.GenericSecurityInformationMissing(),
+        true);
       //Stop execution
       return;
     }
@@ -59,7 +67,8 @@ module.exports = function(socket, mongoose, eventEmitter, settings) {
     ) {
       //Call register function with the message, socket, eventEmitter and the
       //session key
-      register(message, mongoose, socket, eventEmitter, aesKey);
+      register(message, mongoose, socket, eventEmitter, aesKey, challenge,
+        settings.proofOfWork.strength);
       //Return to prevent further execution until the next message
       return;
     }
@@ -67,7 +76,8 @@ module.exports = function(socket, mongoose, eventEmitter, settings) {
     else if(message.type.toUpperCase() === 'VERIFY') {
       //Call verify function with message, socket, eventEmitter, session key,
       //and a callback due to mongodb being asynchronous
-      verify(message, mongoose, socket, eventEmitter, aesKey, function(verif) {
+      verify(message, mongoose, socket, eventEmitter, aesKey, challenge,
+          settings.proofOfWork.strength, function(verif) {
         verified = verif;
         if(verified) {
           id = message.id;
@@ -79,8 +89,10 @@ module.exports = function(socket, mongoose, eventEmitter, settings) {
     //Past this point the user should have their user ID verified and attached
     //to the session.
     if(verified == null) {
-      //If the user has not verified who they are, do not continue
-      errorHandler.sendError(socket, 'STAGE_VERIFICATION_NOT_EXECUTED');
+      //If the user has not verified who they are, disconnect
+      errorHandler.sendError(socket,
+        new errorList.VerificationNotExecuted(),
+        true);
       //Stop running
       return;
     }

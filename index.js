@@ -1,9 +1,5 @@
 'use strict';
 //GENERIC IMPORTS
-//Import event emitter in order for people to be able to listen to events fired
-//by us
-const events = require('events');
-
 //Import deep-defaults, the default settings module
 const defaults = require('deep-defaults');
 
@@ -18,10 +14,12 @@ const ws = require('nodejs-websocket');
 const JsonWebSocket = require('json-websocket');
 //Hive connection handler
 const hiveConnectionHandler = require('./Hive/Server/ConnectionHandler.js');
+//Import the Hive event handler
+const HiveEventHandler = require('./Hive/Server/EventHandler.js');
 //Import the WorkerCleaner
 const workerCleaner = require('./Hive/WorkerUtils/WorkerCleaner.js');
 //Create the Hive prototype, for the server
-const Hive = function(userSettings) {
+const hive = function(userSettings) {
   //Set default settings
   const settings = defaults(userSettings,
   {
@@ -35,6 +33,9 @@ const Hive = function(userSettings) {
     },
     work: {
       groupMax: 10
+    },
+    proofOfWork: {
+      strength: 4
     },
     sections: {
       disableRegistration: false
@@ -55,7 +56,7 @@ const Hive = function(userSettings) {
     (settings.database.port ? ':' + settings.database.port : '') +
     '/' + settings.database.databaseName);
   //Create an instance of the event emitter in order to use it later
-  const eventEmitter = new events.EventEmitter();
+  const eventHandler = new HiveEventHandler();
   //Create a TCP server
   const server = net.createServer();
   //Listen on the port defined above
@@ -67,24 +68,43 @@ const Hive = function(userSettings) {
     //Wrap the socket in the JsonSocket
     socket = new JsonSocket(socket);
     //Pass in the information we need.
-    hiveConnectionHandler(socket, mongoose, eventEmitter, settings);
+    hiveConnectionHandler(socket, mongoose, eventHandler, settings);
   });
   //If the websocket was desired, enable the server
   if(settings.websocket.enabled === true) {
     //Create a ws server
-    const server = ws.createServer();
+    const wsserver = ws.createServer();
     //Listen on the port defined above
-    server.listen(settings.websocket.port);
+    wsserver.listen(settings.websocket.port);
     //When we receive a connection, create a socket
-    server.on('connection', function(socket) {
+    wsserver.on('connection', function(socket) {
       //Wrap the socket in a JsonWebSocket
       socket = new JsonWebSocket(socket);
       //Pass in the socket
-      hiveConnectionHandler(socket, mongoose, eventEmitter, settings);
+      hiveConnectionHandler(socket, mongoose, eventHandler, settings);
+    });
+    //Listen for stop events
+    eventHandler.on('stop', function(callback) {
+      //Stop the ws server gracefully. Callback is called once the server has
+      //finished all current connections.
+      server.close(function(error) {
+        wsserver.close(function() {
+          callback();
+        });
+      });
+    });
+  } else {
+    //Listen for stop events
+    eventHandler.on('stop', function(callback) {
+      //Stop the TCP server gracefully. Callback is called once the server has
+      //finished all current connections
+      server.close(function(error) {
+        callback();
+      });
     });
   }
   //Return the event emitter in order for the client to listen on it
-  return eventEmitter;
+  return eventHandler;
 };
 
 //HONEYBEE IMPORTS
@@ -96,12 +116,15 @@ const HoneybeeEventHandler = require('./Honeybee/EventHandler.js');
 //address = string hostname of the server
 //port = listening port of the server
 //key = public RSA key of the server
-const Honeybee = function(userSettings, callback) {
+const honeybee = function(userSettings, callback) {
   //Set default settings
   const settings = defaults(userSettings, {
     connection: {
       hostname: 'localhost',
       port: 54321
+    },
+    proofOfWork: {
+      strength: 4
     }
   });
   //Create an instance of eventEmitter in order to be able to use it later
@@ -113,5 +136,8 @@ const Honeybee = function(userSettings, callback) {
 };
 
 //Export functions
-module.exports.Hive = Hive;
-module.exports.Honeybee = Honeybee;
+module.exports.Hive = hive;
+module.exports.Honeybee = honeybee;
+//Export error lists for convenience
+module.exports.errorGroups = require('./error/errorGroups.js');
+module.exports.errorList = require('./error/errorList.js');

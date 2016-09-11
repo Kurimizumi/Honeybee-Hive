@@ -37,7 +37,7 @@ See [examples](https://github.com/Kurimizumi/Honeybee-Hive/tree/master/examples)
 The server gets called like this:
 ```javascript
 let HoneybeeHive = require('honeybee-hive');
-let eventEmitter = HoneybeeHive.Hive(settings);
+let eventHandler = HoneybeeHive.Hive(settings);
 ```
 
 The settings object is described below
@@ -56,6 +56,9 @@ let settings = {
   },
   work: {
     groupMax: 10 //How many datasets must be submitted before the workgroup is considered completed. Default: 10
+  },
+  proofOfWork: {
+    strength: 4 //How difficult should the proof of work problem be? Higher values help to prevent spam, but take longer to calculate on average. Set to -1 to be (essentially) off. Default: 4
   },
   encryption: {
     key: "some private key" //NO DEFAULT. YOU MUST SET THIS. The PEM encoded RSA private key for the server
@@ -78,7 +81,7 @@ let settings = {
 #### Event Emitter
 The main function returns an event emitter which we can then listen on, like this:
 ```javascript
-eventEmitter.on('eventName', function(eventArgs, eventArgs2) {
+eventHandler.on('eventName', function(eventArgs, eventArgs2) {
   //Some code here to process event arguments
 });
 ```
@@ -87,7 +90,7 @@ The events are detailed below
 ###### Create work
 We can listen for requests to create work like this:
 ```javascript
-eventEmitter.on('create_work', function(callback) {
+eventHandler.on('create_work', function(callback) {
   //We can send the work to the callback like this:
   callback({
     work: 0
@@ -100,7 +103,7 @@ eventEmitter.on('create_work', function(callback) {
 ###### Workgroup complete
 When a set of work is complete, we must verify it. We can do so like this:
 ```javascript
-eventEmitter.on('workgroup_complete', function(array, callback) {
+eventHandler.on('workgroup_complete', function(array, callback) {
   //Make sure that all the values of the array are equal
   for(let i = 0; i < array.length - 1; i++) {
     //If they aren't equal
@@ -120,15 +123,23 @@ eventEmitter.on('workgroup_complete', function(array, callback) {
 When a workgroup is validated, we can then bring it together with other validated workgroups, or datachunks, like this:
 ```javascript
 let total = 0;
-eventEmitter.on('new_datachunk', function(datachunk) {
+eventHandler.on('new_datachunk', function(datachunk) {
   //datachunk is the data that we submitted to the callback for workgroup_complete
   //We access the count property and add it to the total, and then log it to the console
   total += datachunk.count;
   console.log(total);
 });
 ```
-
 Remember that if order matters, then you'll need to submit an order with the work, and form a queue type system
+
+###### Stopping the server
+To stop the server you can do this:
+```javascript
+eventHandler.stop(function() {
+  //Called once all existing connections have finished and the server is actually closed.
+});
+```
+
 
 ###### Notes
 
@@ -139,10 +150,7 @@ Remember that if order matters, then you'll need to submit an order with the wor
 The client gets called like this:
 ```javascript
 let HoneybeeHive = require('honeybee-hive');
-let eventHandler;
-HoneybeeHive.Honeybee(settings, function(evtHandler) {
-  //Set eventHandler to evtHandler
-  eventHandler = evtHandler;
+HoneybeeHive.Honeybee(settings, function(eventHandler) {
   //Wait for us to be registered
   eventHandler.once('registered', function() {
     //Request our first piece of work
@@ -184,7 +192,8 @@ eventHandler.once('registered', function() {
 ###### Request work
 We can request work like this:
 ```javascript
-eventHandler.request(function(work) {
+eventHandler.request(function(error, work) {
+  //If error is true, then we can process it as needed
   //work is the work that we specified on the server
   //we should process it and then send it for submission
 });
@@ -193,7 +202,8 @@ eventHandler.request(function(work) {
 ###### Submit work
 We can submit processed work like this:
 ```javascript
-eventHandler.submit(work, function(success) {
+eventHandler.submit(work, function(error, success) {
+  //If error is true then we can process it as needed
   //success tells us if the submission was successful. You should not retry on failure, rather just request new work
 });
 ```
@@ -203,15 +213,75 @@ eventHandler.submit(work, function(success) {
 ###### Combining the two
 We can combine requesting and submitting like this:
 ```javascript
-function workHandler(work) {
+function workHandler(error, work) {
   eventHandler.submit(work, submitHandler);
 }
-function submitHandler(success) {
+function submitHandler(error, success) {
   eventHandler.request(workHandler);
 }
 //Request first work
 eventHandler.request(workHandler);
 ```
+
+#### Error handling
+As you can see in the above examples, there are areas where an error object is returned.
+
+You can do something similar to a try/catch block in Java with if statements, importing the error objects. E.g.:
+```javascript
+const HoneybeeHive = require('honeybee-hive');
+const errorList = HoneybeeHive.errorList;
+const errorGroups = HoneybeeHive.errorGroups;
+function workHandler(error, work) {
+  if(error) {
+    //Start try/catch-esque if/else if/else block
+    //Catch all security errors
+    if(error instanceof errorGroups.SecurityError) {
+      //Do something here
+    }
+    //Catch only post handshake errors
+    else if(error instanceof errorList.HandshakePostCompleteFailure) {
+      //Do something
+    }
+    //Catch all *other* handshake errors
+    else if(error instanceof errorGroups.HandshakeError) {
+      //Do something
+    }
+    //Catch either submit or request errors
+    else if(error instanceof errorGroups.SubmitError || error instanceof errorGroups.RequestError) {
+      //Do something
+    }
+    //Catch all other errors, including generic/unknown errors
+    else {
+      //Do something
+    }
+  }
+}
+```
+
+This is the complete list of errors, their description, and their error group:
+
+| Error Name                        | Error Group       | Error Description                                                                                                        |
+|-----------------------------------|-------------------|--------------------------------------------------------------------------------------------------------------------------|
+| DatabaseGeneric                   | DatabaseError     | Generic database errors which do not have a specific error associated                                                    |
+| DatabaseNotFound                  | DatabaseError     | When a record was not found in the database (e.g. when the worker was not found as being a worker for the submitted data |
+| GenericPayloadMissing             | GenericError      | When the encrypted payload is missing                                                                                    |
+| GenericParametersMissing          | GenericError      | When parameters are missing (e.g. the type of message)                                                                   |
+| GenericSecurityInformationMissing | GenericError      | When security information is missing (e.g. the IV used to encrypt the payload)                                           |
+| HandshakeGeneric                  | HandshakeError    | When a generic handshake error occurs                                                                                    |
+| HandshakeKeyMissing               | HandshakeError    | When the client doesn't provide an AES key                                                                               |
+| HandshakePostCompleteFailure      | HandshakeError    | When the handshake fails elsewhere (e.g. someone edits the packets and fails to match the authentication tag)            |
+| VerificationGeneric               | VerificationError | When a generic verification error occurs                                                                                 |
+| VerificationNotExecuted           | VerificationError | When a user tries to execute an operation which requires verification, but they have not verified themselves yet         |
+| RequestNoWork                     | RequestError      | When a user tries to request work, but there is none remaining for the server to give out                                |
+| RequestPendingWork                | RequestError      | When a user tries to request work, but has work which is unsubmitted                                                     |
+| SubmitNoData                      | SubmitError       | When a user sends no completed work with the submission                                                                  |
+| SecurityInvalidKey                | SecurityError     | When an invalid key format is sent                                                                                       |
+| SecurityKeyGenerationFailure      | SecurityError     | When an RSA keypair fails to generate                                                                                    |
+| SecurityEncryptionFailure         | SecurityError     | When there's an error encrypting                                                                                         |
+| SecurityDecryptionFailure         | SecurityError     | When there's an error decrypting                                                                                         |
+| SecuritySigningFailure            | SecurityError     | When there's an error signing the message                                                                                |
+| SecurityVerificationFailure       | SecurityError     | When there's an error when trying to verify a message                                                                    |
+
 
 
 ###### Notes
