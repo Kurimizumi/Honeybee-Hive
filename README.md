@@ -1,3 +1,6 @@
+# Deprecation notice
+This module is no longer updated. Take a look at Flarp's [Disti-Node](https://github.com/Flarp/Distri-Node) instead.
+
 # Honeybee-Hive
 Master [![CircleCI][circleci-image]][circleci-link]
 Dev [![CircleCI][circleci-dev-image]][circleci-dev-link]
